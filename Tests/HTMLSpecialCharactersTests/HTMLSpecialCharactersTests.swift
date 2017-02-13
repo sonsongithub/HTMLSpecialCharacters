@@ -17,7 +17,9 @@ class HTMLSpecialCharactersTests: XCTestCase {
     let stringToBeEscaped = "\"&&apos;<>ŒœŠšŸˆ˜   ‌‍‎‏–—‘’‚“”„†‡‰‹›€hoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahog"
     
     func testStringRoundtrippingEscapedHTML() {
-        let string = "This test ©™®๒०᠐٧"
+        let string = "This test &<>©`\"™®๒०᠐٧~~"
+        print(string.escapeHTML)
+        print(string.escapeHTML.unescapeHTML)
         XCTAssert(string.escapeHTML.unescapeHTML == string)
     }
     
@@ -119,7 +121,7 @@ class HTMLSpecialCharactersTests: XCTestCase {
         }
 
         XCTAssert("&#65;&#x42;&#X43;".unescapeHTML == "ABC", "HTML unescaping failed")
-        XCTAssert("" == "", "HTML unescaping failed")
+        XCTAssert("".unescapeHTML == "", "HTML unescaping failed")
         XCTAssert("&#65;&Bang;&#X43;".unescapeHTML == "A&Bang;C", "HTML unescaping failed")
         XCTAssert("&#65&Bang;&#X43;".unescapeHTML == "&#65&Bang;C", "HTML unescaping failed")
         XCTAssert("&#65;&Bang;&#X43".unescapeHTML == "A&Bang;&#X43", "HTML unescaping failed")

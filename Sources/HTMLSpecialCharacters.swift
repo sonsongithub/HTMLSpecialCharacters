@@ -632,14 +632,19 @@ extension String {
         NSString(string: self).getCharacters(buffer)
         let margin = 0
         guard let destinationBuffer = NSMutableData(capacity: MemoryLayout<unichar>.size * (utf16.count + margin)) else { return self }
-
-        for i in 0..<utf16.count {
+        var start = 0
+        for i in 0..<length {
             if let result = bsearch(with: (buffer + i).pointee, from: unicodeHtmlEscapeMapForUTF8, comparator: comp) {
+                let copyLength = i - start
+                destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
                 let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result.0.unescapingCodes))
                 destinationBuffer.append(pointer, length: MemoryLayout<unichar>.size * result.0.count)
-            } else {
-                destinationBuffer.append(buffer + i, length: (MemoryLayout<unichar>.size))
+                start = i + 1
             }
+        }
+        if length - start > 0 {
+            let copyLength = length - start
+            destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
         }
         return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
     }
