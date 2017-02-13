@@ -42,7 +42,7 @@ class HTMLSpecialCharactersTests: XCTestCase {
             34, 38, 39, 60, 62, 338, 339, 352, 353, 376, 710, 732,
             8194, 8195, 8201, 8204, 8205, 8206, 8207, 8211, 8212, 8216, 8217, 8218,
             8220, 8221, 8222, 8224, 8225, 8240, 8249, 8250, 8364
-        ];
+        ]
         let string = "&quot;&amp;&apos;&lt;&gt;&OElig;&oelig;&Scaron;&scaron;&Yuml;" +
         "&circ;&tilde;&ensp;&emsp;&thinsp;&zwnj;&zwj;&lrm;&rlm;&ndash;" +
         "&mdash;&lsquo;&rsquo;&sbquo;&ldquo;&rdquo;&bdquo;&dagger;&Dagger;" +
@@ -114,7 +114,8 @@ class HTMLSpecialCharactersTests: XCTestCase {
             defer { buffer.deallocate(capacity: chars.count) }
             buffer.pointee = chars[i]
             guard let testString = String(bytesNoCopy: buffer, length: MemoryLayout<unichar>.size, encoding: String.Encoding.utf16LittleEndian, freeWhenDone: false) else { XCTFail(); return }
-            XCTAssert(testString == (s as NSString).substring(with: NSMakeRange(i,1)), "\(chars[i])=>\((s as NSString).substring(with: NSMakeRange(i,1)).unescapeHTML)")
+            let r = NSRange(location: i, length: 1)
+            XCTAssert(testString == (s as NSString).substring(with: r), "\(chars[i])=>\((s as NSString).substring(with: r).unescapeHTML)")
         }
 
         XCTAssert("&#65;&#x42;&#X43;".unescapeHTML == "ABC", "HTML unescaping failed")
@@ -133,8 +134,8 @@ class HTMLSpecialCharactersTests: XCTestCase {
 
     func testBsearch() {
         let count = 1000
-        let candidates1 = Set((0..<count).map( { (_) -> Int in Int(arc4random() % 10000)}))
-        let candidates2 = Set((0..<count).map( { (_) -> Int in Int(arc4random() % 10000)}))
+        let candidates1 = Set((0..<count).map({ (_) -> Int in Int(arc4random() % 10000)}))
+        let candidates2 = Set((0..<count).map({ (_) -> Int in Int(arc4random() % 10000)}))
 
         let queries1 = candidates1.intersection(candidates2)
         let queries2 = candidates2.subtracting(queries1)

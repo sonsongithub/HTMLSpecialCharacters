@@ -43,7 +43,7 @@ private let unicodeHtmlUnescapeMapNameLength_2: [HtmlUnescapeMap] = [
 	HtmlUnescapeMap([111, 114], 8744), // "or" => "∨"
 	HtmlUnescapeMap([110, 101], 8800), // "ne" => "≠"
 	HtmlUnescapeMap([108, 101], 8804), // "le" => "≤"
-	HtmlUnescapeMap([103, 101], 8805), // "ge" => "≥"
+	HtmlUnescapeMap([103, 101], 8805)  // "ge" => "≥"
 ]
 
 private let unicodeHtmlUnescapeMapNameLength_3: [HtmlUnescapeMap] = [
@@ -81,7 +81,7 @@ private let unicodeHtmlUnescapeMapNameLength_3: [HtmlUnescapeMap] = [
 	HtmlUnescapeMap([115, 105, 109], 8764), // "sim" => "∼"
 	HtmlUnescapeMap([115, 117, 98], 8834), // "sub" => "⊂"
 	HtmlUnescapeMap([115, 117, 112], 8835), // "sup" => "⊃"
-	HtmlUnescapeMap([108, 111, 122], 9674), // "loz" => "◊"
+	HtmlUnescapeMap([108, 111, 122], 9674) // "loz" => "◊"
 ]
 
 private let unicodeHtmlUnescapeMapNameLength_4: [HtmlUnescapeMap] = [
@@ -145,7 +145,7 @@ private let unicodeHtmlUnescapeMapNameLength_4: [HtmlUnescapeMap] = [
 	HtmlUnescapeMap([112, 101, 114, 112], 8869), // "perp" => "⊥"
 	HtmlUnescapeMap([115, 100, 111, 116], 8901), // "sdot" => "⋅"
 	HtmlUnescapeMap([108, 97, 110, 103], 9001), // "lang" => "〈"
-	HtmlUnescapeMap([114, 97, 110, 103], 9002), // "rang" => "〉"
+	HtmlUnescapeMap([114, 97, 110, 103], 9002) // "rang" => "〉"
 ]
 
 private let unicodeHtmlUnescapeMapNameLength_5: [HtmlUnescapeMap] = [
@@ -220,7 +220,7 @@ private let unicodeHtmlUnescapeMapNameLength_5: [HtmlUnescapeMap] = [
 	HtmlUnescapeMap([108, 99, 101, 105, 108], 8968), // "lceil" => "⌈"
 	HtmlUnescapeMap([114, 99, 101, 105, 108], 8969), // "rceil" => "⌉"
 	HtmlUnescapeMap([99, 108, 117, 98, 115], 9827), // "clubs" => "♣"
-	HtmlUnescapeMap([100, 105, 97, 109, 115], 9830), // "diams" => "♦"
+	HtmlUnescapeMap([100, 105, 97, 109, 115], 9830) // "diams" => "♦"
 ]
 
 private let unicodeHtmlUnescapeMapNameLength_6: [HtmlUnescapeMap] = [
@@ -285,7 +285,7 @@ private let unicodeHtmlUnescapeMapNameLength_6: [HtmlUnescapeMap] = [
 	HtmlUnescapeMap([108, 102, 108, 111, 111, 114], 8970), // "lfloor" => "⌊"
 	HtmlUnescapeMap([114, 102, 108, 111, 111, 114], 8971), // "rfloor" => "⌋"
 	HtmlUnescapeMap([115, 112, 97, 100, 101, 115], 9824), // "spades" => "♠"
-	HtmlUnescapeMap([104, 101, 97, 114, 116, 115], 9829), // "hearts" => "♥"
+	HtmlUnescapeMap([104, 101, 97, 114, 116, 115], 9829) // "hearts" => "♥"
 ]
 
 private let unicodeHtmlUnescapeMapNameLength_7: [HtmlUnescapeMap] = [
@@ -295,13 +295,12 @@ private let unicodeHtmlUnescapeMapNameLength_7: [HtmlUnescapeMap] = [
 	HtmlUnescapeMap([101, 112, 115, 105, 108, 111, 110], 949), // "epsilon" => "ε"
 	HtmlUnescapeMap([111, 109, 105, 99, 114, 111, 110], 959), // "omicron" => "ο"
 	HtmlUnescapeMap([117, 112, 115, 105, 108, 111, 110], 965), // "upsilon" => "υ"
-	HtmlUnescapeMap([97, 108, 101, 102, 115, 121, 109], 8501), // "alefsym" => "ℵ"
+	HtmlUnescapeMap([97, 108, 101, 102, 115, 121, 109], 8501) // "alefsym" => "ℵ"
 ]
 
 private let unicodeHtmlUnescapeMapNameLength_8: [HtmlUnescapeMap] = [
-	HtmlUnescapeMap([116, 104, 101, 116, 97, 115, 121, 109], 977), // "thetasym" => "ϑ"
+	HtmlUnescapeMap([116, 104, 101, 116, 97, 115, 121, 109], 977) // "thetasym" => "ϑ"
 ]
-
 
 private let unicodeHtmlEscapeMapForAscii: [HtmlEscapeMap] = [
     HtmlEscapeMap(34, [38, 113, 117, 111, 116, 59]), // => "quot"
@@ -556,7 +555,7 @@ private let unicodeHtmlEscapeMapForAscii: [HtmlEscapeMap] = [
     HtmlEscapeMap(9824, [38, 115, 112, 97, 100, 101, 115, 59]), // => "spades"
     HtmlEscapeMap(9827, [38, 99, 108, 117, 98, 115, 59]), // => "clubs"
     HtmlEscapeMap(9829, [38, 104, 101, 97, 114, 116, 115, 59]), // => "hearts"
-    HtmlEscapeMap(9830, [38, 100, 105, 97, 109, 115, 59]), // => "diams"
+    HtmlEscapeMap(9830, [38, 100, 105, 97, 109, 115, 59]) // => "diams"
 ]
 private let unicodeHtmlEscapeMapForUTF8: [HtmlEscapeMap] = [
     HtmlEscapeMap(34, [38, 113, 117, 111, 116, 59]), // => "quot"
@@ -591,7 +590,7 @@ private let unicodeHtmlEscapeMapForUTF8: [HtmlEscapeMap] = [
     HtmlEscapeMap(8240, [38, 112, 101, 114, 109, 105, 108, 59]), // => "permil"
     HtmlEscapeMap(8249, [38, 108, 115, 97, 113, 117, 111, 59]), // => "lsaquo"
     HtmlEscapeMap(8250, [38, 114, 115, 97, 113, 117, 111, 59]), // => "rsaquo"
-    HtmlEscapeMap(8364, [38, 101, 117, 114, 111, 59]), // => "euro"
+    HtmlEscapeMap(8364, [38, 101, 117, 114, 111, 59]) // => "euro"
 ]
 
 private func getTable(length: Int) -> [HtmlUnescapeMap]? {
@@ -664,32 +663,48 @@ extension String {
             let range = begin...semicolonIndex
             // a squence must be longer than 3 (&lt;) and less than 11 (&thetasym;)
             guard 4...10 ~= range.count else { continue }
-            let character: unichar?
             if buffer[begin + 1] == sharp {
                 let char2 = buffer[begin + 2]
                 if hexPrefixes.contains(char2) {
-                    // Hex escape squences &#xa3;
-                    character = hexStream2UnicodeChars(utf16Storage: buffer[begin + 3..<semicolonIndex])
+                    do {
+                        // Hex escape squences &#xa3;
+                        let character = try hexStream2UnicodeChars(utf16Storage: buffer[begin + 3..<semicolonIndex])
+                        buffer[range] = [character]
+                    } catch {
+                        print(error)
+                    }
                 } else {
-                    // Decimal Sequences &#123;
-                    character = decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex])
+                    do {
+                        // Decimal Sequences &#123;
+                        let character = try decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex])
+                        buffer[range] = [character]
+                    } catch {
+                        print(error)
+                    }
                 }
             } else {
-                // "standard" sequences
-                let escapedNameRange = begin + 1..<semicolonIndex
-                character = matchUnicodeChars(utf16Storage: buffer[escapedNameRange])
-            }
-            if let character = character {
-                buffer[range] = [character]
+                do {
+                    // "standard" sequences
+                    let escapedNameRange = begin + 1..<semicolonIndex
+                    let character = try matchUnicodeChars(utf16Storage: buffer[escapedNameRange])
+                    buffer[range] = [character]
+                } catch {
+                    print(error)
+                }
             }
         }
-
-        return String(utf16Storage: buffer)
+        do {
+            return try String(utf16Storage: buffer)
+        } catch {
+            print(error)
+            return self
+        }
     }
 
-    private init<T>(utf16Storage: T) where T: ContiguousStorage, T.Iterator.Element == unichar {
-        self = utf16Storage.withUnsafeBufferPointer {
-            String(utf16CodeUnits: $0.baseAddress!, count: $0.count)
+    private init<T>(utf16Storage: T) throws where T: ContiguousStorage, T.Iterator.Element == unichar {
+        self = try utf16Storage.withUnsafeBufferPointer {
+            guard let p = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidBufferSequence }
+            return String(utf16CodeUnits: p, count: $0.count)
         }
     }
 }
@@ -702,51 +717,36 @@ extension Array: ContiguousStorage {}
 extension ArraySlice: ContiguousStorage {}
 extension ContiguousArray: ContiguousStorage {}
 
-private func hexStream2UnicodeChars<T>(utf16Storage: T) -> unichar? where T: ContiguousStorage, T.Iterator.Element == unichar {
-    return utf16Storage.withUnsafeBufferPointer {
-        guard let unichars = $0.baseAddress else { return nil }
-        guard $0.count <= 4 else { return nil }
-        var u = UInt16(0)
-        let basis: [UInt16] = [1, 16, 256, 4096].prefix($0.count).reversed()
-        for j in 0..<$0.count {
-            if (48...57) ~= unichars[j] {
-                u = u + basis[j] * (unichars[j] - 48)
-            } else if (65...70) ~= unichars[j] {
-                u = u + basis[j] * (unichars[j] - 65 + 10)
-            } else if (97...102) ~= unichars[j] {
-                u = u + basis[j] * (unichars[j] - 97 + 10)
-            } else {
-                return nil
-            }
-        }
-        return u
-    }
+public enum HTMLSpecialCharactersError: Error {
+    case invalidHexSquence
+    case invalidDecimalSquence
+    case invalidEscapeSquence
+    case invalidBufferSequence
 }
 
-private func decimalStream2UnicodeChars<T>(utf16Storage: T) -> unichar? where T: ContiguousStorage, T.Iterator.Element == unichar {
-    return utf16Storage.withUnsafeBufferPointer {
-        guard let unichars = $0.baseAddress else { return nil }
-        guard $0.count <= 5 else { return nil }
-        var u = UInt(0)
-        let basis: [UInt] = [1, 10, 100, 1000, 10000].prefix($0.count).reversed()
-        for j in 0..<$0.count {
-            if (48...57) ~= unichars[j] {
-                u = u + basis[j] * (UInt(unichars[j]) - 48)
-            } else {
-                return nil
-            }
-        }
-        if u > UInt(UInt16.max) {
-            return nil
-        } else {
-            return UInt16(u)
+private func hexStream2UnicodeChars<T>(utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
+    return try utf16Storage.reduce(0) {
+        switch $1 {
+        case 48...57: return $0 << 4 + $1 - 48
+        case 65...70: return $0 << 4 + $1 - 65 + 10
+        case 97...102: return $0 << 4 + $1 - 97 + 10
+        default: throw HTMLSpecialCharactersError.invalidHexSquence
         }
     }
 }
 
-private func matchUnicodeChars<T>(utf16Storage: T) -> unichar? where T: ContiguousStorage, T.Iterator.Element == unichar {
-    return utf16Storage.withUnsafeBufferPointer {
-        guard let unichars = $0.baseAddress else { return nil }
+private func decimalStream2UnicodeChars<T>(utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
+    return try utf16Storage.reduce(0) {
+        switch $1 {
+        case 48...57: return $0 * 10 + $1 - 48
+        default: throw HTMLSpecialCharactersError.invalidDecimalSquence
+        }
+    }
+}
+
+private func matchUnicodeChars<T>(utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
+    return try utf16Storage.withUnsafeBufferPointer {
+        guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
         if let t = getTable(length: $0.count) {
             for i in 0..<t.count {
                 var match = true
@@ -762,11 +762,11 @@ private func matchUnicodeChars<T>(utf16Storage: T) -> unichar? where T: Contiguo
                 }
             }
         }
-        return nil
+        throw HTMLSpecialCharactersError.invalidEscapeSquence
     }
 }
 
-internal func bsearch<T,U>(with key: T, from sortedArray: [U], comparator:(T,U)->Int) -> (U, Int)? {
+internal func bsearch<T, U>(with key: T, from sortedArray: [U], comparator: (T, U) -> Int) -> (U, Int)? {
     var searchCount = 0
     var startIndex = sortedArray.startIndex
     var endIndex = sortedArray.endIndex
@@ -775,7 +775,7 @@ internal func bsearch<T,U>(with key: T, from sortedArray: [U], comparator:(T,U)-
     repeat {
         range = startIndex..<endIndex
         middle = startIndex.advanced(by: range.count/2)
-        searchCount = searchCount + 1
+        searchCount += 1
         let c = comparator(key, sortedArray[middle])
         if c == 1 {
             startIndex = middle
