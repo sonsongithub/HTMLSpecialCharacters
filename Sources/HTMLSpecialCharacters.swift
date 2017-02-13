@@ -638,13 +638,11 @@ extension String {
             if let result = bsearch(with: (buffer + i).pointee, from: unicodeHtmlEscapeMapForUTF8, comparator: comp) {
                 let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result.0.unescapingCodes))
                 destinationBuffer.append(pointer, length: MemoryLayout<unichar>.size * result.0.count)
-//                destinationBuffer.append(buffer + i, length: (MemoryLayout<unichar>.size))
             } else {
                 destinationBuffer.append(buffer + i, length: (MemoryLayout<unichar>.size))
             }
         }
-
-        return String(data: destinationBuffer as Data, encoding: .utf8) ?? self
+        return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
     }
 
     // Original code written by @norio_nomura
