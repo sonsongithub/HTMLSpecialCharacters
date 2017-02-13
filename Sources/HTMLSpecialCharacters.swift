@@ -663,35 +663,22 @@ extension String {
             let range = begin...semicolonIndex
             // a squence must be longer than 3 (&lt;) and less than 11 (&thetasym;)
             guard 4...10 ~= range.count else { continue }
-            if buffer[begin + 1] == sharp {
-                let char2 = buffer[begin + 2]
-                if hexPrefixes.contains(char2) {
-                    do {
+            do {
+                if buffer[begin + 1] == sharp {
+                    let char2 = buffer[begin + 2]
+                    if hexPrefixes.contains(char2) {
                         // Hex escape squences &#xa3;
-                        let character = try hexStream2UnicodeChars(utf16Storage: buffer[begin + 3..<semicolonIndex])
-                        buffer[range] = [character]
-                    } catch {
-                        print(error)
+                        buffer[range] = [try hexStream2UnicodeChars(utf16Storage: buffer[begin + 3..<semicolonIndex])]
+                    } else {
+                        // Decimal Sequences &#123;
+                        buffer[range] = [try decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex])]
                     }
                 } else {
-                    do {
-                        // Decimal Sequences &#123;
-                        let character = try decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex])
-                        buffer[range] = [character]
-                    } catch {
-                        print(error)
-                    }
-                }
-            } else {
-                do {
                     // "standard" sequences
                     let escapedNameRange = begin + 1..<semicolonIndex
-                    let character = try matchUnicodeChars(utf16Storage: buffer[escapedNameRange])
-                    buffer[range] = [character]
-                } catch {
-                    print(error)
+                    buffer[range] = [try matchUnicodeChars(utf16Storage: buffer[escapedNameRange])]
                 }
-            }
+            } catch { print(error) }
         }
         do {
             return try String(utf16Storage: buffer)
