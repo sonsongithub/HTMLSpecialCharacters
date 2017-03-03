@@ -667,6 +667,8 @@ extension String {
             guard let semicolonIndex = buffer[begin..<end].index(of: semicolon) else { continue }
             let range = begin...semicolonIndex
             // a squence must be longer than 3 (&lt;) and less than 11 (&thetasym;)
+            // a squence must be longer than 3 (&lt;) and less than 11 (&#Xffffff;)
+            // a squence must be longer than 3 (&lt;) and less than 11 (&#9999999;)
             guard 4...10 ~= range.count else { continue }
             do {
                 if buffer[begin + 1] == sharp {
@@ -677,7 +679,6 @@ extension String {
                     } else {
                         // Decimal Sequences &#123;
                         buffer[range] = ArraySlice(try decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex]))
-                        
                     }
                 } else {
                     // "standard" sequences
@@ -718,6 +719,7 @@ public enum HTMLSpecialCharactersError: Error {
 }
 
 private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
+    // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
     let w: UInt  = (unicode & 0b00000000000111110000000000000000) >> 16 - 1
     let x1: UInt = (unicode & 0b00000000000000001111110000000000) >> 10
     let x2: UInt = (unicode & 0b00000000000000000000001111111111) >> 0
