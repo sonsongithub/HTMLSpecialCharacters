@@ -624,8 +624,7 @@ private func comp(v1: unichar, v2: HtmlEscapeMap) -> Int {
     }
 }
 
-
-func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
+private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
     guard u1 > (0b11011000 << 8) else { return nil }
     guard u1 < (0b11011100 << 8) else { return nil }
     guard u2 > (0b11011100 << 8) else { return nil }
@@ -640,27 +639,30 @@ func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
     
     let hex = (0...3).reversed().map({ (scalar >> ($0 * 8)) & 255 })
     
+    let ampersand = unichar(UInt8(ascii: "&"))
+    let semicolon = unichar(UInt8(ascii: ";"))
+    let sharp = unichar(UInt8(ascii: "#"))
+    let x = unichar(UInt8(ascii: "x"))
+    
     let uc: [unichar] = [
-        48,
-        49,
-        50,
-        51,
-        52,
-        53,
-        54,
-        55,
-        56,
-        57,
-        65,
-        66,
-        67,
-        68,
-        69,
-        70
+        unichar(UInt8(ascii: "0")),
+        unichar(UInt8(ascii: "1")),
+        unichar(UInt8(ascii: "2")),
+        unichar(UInt8(ascii: "3")),
+        unichar(UInt8(ascii: "4")),
+        unichar(UInt8(ascii: "5")),
+        unichar(UInt8(ascii: "6")),
+        unichar(UInt8(ascii: "7")),
+        unichar(UInt8(ascii: "8")),
+        unichar(UInt8(ascii: "9")),
+        unichar(UInt8(ascii: "A")),
+        unichar(UInt8(ascii: "B")),
+        unichar(UInt8(ascii: "C")),
+        unichar(UInt8(ascii: "D")),
+        unichar(UInt8(ascii: "E")),
+        unichar(UInt8(ascii: "F"))
     ]
-    
-    var output: [unichar] = [38, 35, 88]
-    
+    var output: [unichar] = [ampersand, sharp, x]
     hex.forEach({
         let c1 = Int($0 / 16)
         accum += c1
@@ -673,7 +675,7 @@ func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
             output.append(uc[c2])
         }
     })
-    output.append(59)
+    output.append(semicolon)
     return output
 }
 
