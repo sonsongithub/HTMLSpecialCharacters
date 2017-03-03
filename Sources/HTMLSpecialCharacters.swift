@@ -624,6 +624,59 @@ private func comp(v1: unichar, v2: HtmlEscapeMap) -> Int {
     }
 }
 
+
+func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
+    guard u1 > (0b11011000 << 8) else { return nil }
+    guard u1 < (0b11011100 << 8) else { return nil }
+    guard u2 > (0b11011100 << 8) else { return nil }
+    guard u2 < (0b11100000 << 8) else { return nil }
+    
+    let u  = (u1 & 0b0000001111000000) >> 6 + 1
+    let x1 = (u1 & 0b0000000000111111)
+    let x2 = (u2 & 0b0000001111111111)
+    let scalar: UInt = (UInt(u) << 16) + (UInt(x1) << 10) + UInt(x2)
+    
+    var accum = Int(0)
+    
+    let hex = (0...3).reversed().map({ (scalar >> ($0 * 8)) & 255 })
+    
+    let uc: [unichar] = [
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70
+    ]
+    
+    var output: [unichar] = [38, 35, 88]
+    
+    hex.forEach({
+        let c1 = Int($0 / 16)
+        accum += c1
+        if accum > 0 {
+            output.append(uc[c1])
+        }
+        let c2 = Int($0 % 16)
+        accum += c2
+        if accum > 0 {
+            output.append(uc[c2])
+        }
+    })
+    output.append(59)
+    return output
+}
+
 extension String {
     public var escapeHTML: String {
         let length = utf16.count
@@ -633,13 +686,24 @@ extension String {
         let margin = 0
         guard let destinationBuffer = NSMutableData(capacity: MemoryLayout<unichar>.size * (utf16.count + margin)) else { return self }
         var start = 0
-        for i in 0..<length {
+        for var i in 0..<length {
             if let result = bsearch(with: (buffer + i).pointee, from: unicodeHtmlEscapeMapForUTF8, comparator: comp) {
                 let copyLength = i - start
                 destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
                 let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result.0.unescapingCodes))
                 destinationBuffer.append(pointer, length: MemoryLayout<unichar>.size * result.0.count)
                 start = i + 1
+            } else if i < length - 1 {
+                let u1 = (buffer + i).pointee
+                let u2 = (buffer + i + 1).pointee
+                if let result = escapeUTF16(u1: u1, u2: u2) {
+                    let copyLength = i - start
+                    destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
+                    let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result))
+                    destinationBuffer.append(pointer, length: MemoryLayout<unichar>.size * result.count)
+                    start = i + 2
+                    i += 1
+                }
             }
         }
         if length - start > 0 {

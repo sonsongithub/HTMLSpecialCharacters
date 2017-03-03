@@ -17,8 +17,12 @@ class HTMLSpecialCharactersTests: XCTestCase {
     let stringToBeEscaped = "\"&&apos;<>ŒœŠšŸˆ˜   ‌‍‎‏–—‘’‚“”„†‡‰‹›€hoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahog"
     
     func testEmoji() {
-        let emoji = "&#128570;はかわいい"
-        print(emoji.unescapeHTML)
+        let escaped = "&#128570;はかわいい"
+        let escapedHex = "&#X1F63A;はかわいい"
+        let unescaped = "😺はかわいい"
+        XCTAssert(escaped.unescapeHTML == unescaped)
+        XCTAssert(unescaped.escapeHTML == escapedHex)
+        print(unescaped.escapeHTML)
     }
     
     func testStringRoundtrippingEscapedHTML() {
