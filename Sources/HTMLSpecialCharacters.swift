@@ -673,10 +673,11 @@ extension String {
                     let char2 = buffer[begin + 2]
                     if hexPrefixes.contains(char2) {
                         // Hex escape squences &#xa3;
-                        buffer[range] = [try hexStream2UnicodeChars(utf16Storage: buffer[begin + 3..<semicolonIndex])]
+                        buffer[range] = ArraySlice(try hexStream2UnicodeChars(utf16Storage: buffer[begin + 3..<semicolonIndex]))
                     } else {
                         // Decimal Sequences &#123;
-                        buffer[range] = [try decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex])]
+                        buffer[range] = ArraySlice(try decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex]))
+                        
                     }
                 } else {
                     // "standard" sequences
@@ -716,23 +717,46 @@ public enum HTMLSpecialCharactersError: Error {
     case invalidBufferSequence
 }
 
-private func hexStream2UnicodeChars<T>(utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
-    return try utf16Storage.reduce(0) {
+private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
+    let w: UInt  = (unicode & 0b00000000000111110000000000000000) >> 16 - 1
+    let x1: UInt = (unicode & 0b00000000000000001111110000000000) >> 10
+    let x2: UInt = (unicode & 0b00000000000000000000001111111111) >> 0
+    let u1: UInt16 = UInt16((0b11011000 << 8) + (w << 6) + x1)
+    let u2: UInt16 = UInt16(UInt(0b11011100 << 8) + x2)
+    return [u1, u2]
+}
+
+private func hexStream2UnicodeChars<T>(utf16Storage: T) throws -> [unichar] where T: ContiguousStorage, T.Iterator.Element == unichar {
+    let utf16: UInt = try utf16Storage.reduce(0) {
         switch $1 {
-        case 48...57: return $0 << 4 + $1 - 48
-        case 65...70: return $0 << 4 + $1 - 65 + 10
-        case 97...102: return $0 << 4 + $1 - 97 + 10
+        case 48...57: return UInt($0) << 4 + UInt($1) - 48
+        case 65...70: return UInt($0) << 4 + UInt($1) - 65 + 10
+        case 97...102: return UInt($0) << 4 + UInt($1) - 97 + 10
         default: throw HTMLSpecialCharactersError.invalidHexSquence
         }
     }
+    if utf16 < UInt(unichar.max) {
+        return [unichar(utf16)]
+    } else if utf16 < UInt(0x110000) {
+        return decodeUnicodeScalar(unicode: utf16)
+    } else {
+        throw HTMLSpecialCharactersError.invalidDecimalSquence
+    }
 }
 
-private func decimalStream2UnicodeChars<T>(utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
-    return try utf16Storage.reduce(0) {
+private func decimalStream2UnicodeChars<T>(utf16Storage: T) throws -> [unichar] where T: ContiguousStorage, T.Iterator.Element == unichar {
+    let utf16: UInt = try utf16Storage.reduce(0) {
         switch $1 {
-        case 48...57: return $0 * 10 + $1 - 48
+        case 48...57: return UInt($0 * 10) + UInt($1) - 48
         default: throw HTMLSpecialCharactersError.invalidDecimalSquence
         }
+    }
+    if utf16 < UInt(unichar.max) {
+        return [unichar(utf16)]
+    } else if utf16 < UInt(0x110000) {
+        return decodeUnicodeScalar(unicode: utf16)
+    } else {
+        throw HTMLSpecialCharactersError.invalidDecimalSquence
     }
 }
 
