@@ -680,6 +680,30 @@ private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
 }
 
 extension String {
+    public var removingHTMLTags: String {
+        let length = utf16.count
+        var buffer = [unichar](repeating: 0, count: utf16.count)
+        NSString(string: self).getCharacters(&buffer)
+        
+        let leftParenthesis = unichar(UInt8(ascii: "<"))
+        let rightParenthesis = unichar(UInt8(ascii: ">"))
+        
+        guard let destinationBuffer = NSMutableData(capacity: MemoryLayout<unichar>.size * utf16.count) else { return self }
+        var begin = 0
+        let end = length
+        while let leftIndex = buffer.suffix(from: begin).index(of: leftParenthesis) {
+            guard let rightIndex = buffer[leftIndex..<end].index(of: rightParenthesis)?.advanced(by: 1) else { break }
+            let range = begin..<leftIndex
+            destinationBuffer.append(&buffer + begin, length: MemoryLayout<unichar>.size * range.count)
+            begin = rightIndex
+        }
+        if length - begin > 0 {
+            let copyLength = length - begin
+            destinationBuffer.append(&buffer + begin, length: MemoryLayout<unichar>.size * copyLength)
+        }
+        return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
+    }
+    
     public var escapeHTML: String {
         let length = utf16.count
         let buffer = UnsafeMutablePointer<unichar>.allocate(capacity: utf16.count)
