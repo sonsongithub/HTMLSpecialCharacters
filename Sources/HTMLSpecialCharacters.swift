@@ -806,6 +806,7 @@ public enum HTMLSpecialCharactersError: Error {
     case invalidDecimalSquence
     case invalidEscapeSquence
     case invalidBufferSequence
+    case notErrorMatchedUnicode(code: unichar)
 }
 
 private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
@@ -855,22 +856,17 @@ private func decimalStream2UnicodeChars<T>(utf16Storage: T) throws -> [unichar] 
 private func matchUnicodeChars<T>(utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
     return try utf16Storage.withUnsafeBufferPointer {
         guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
-        if let t = getTable(length: $0.count) {
-            for i in 0..<t.count {
-                var match = true
-                for j in 0..<$0.count {
-                    if t[i].unescapingCodes[j] == unichars[j] {
-                    } else {
-                        match = false
-                        break
-                    }
+        let length = $0.count
+        do {
+            try getTable(length: length)?.forEach({
+                if memcmp($0.unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
+                    throw HTMLSpecialCharactersError.notErrorMatchedUnicode(code: $0.code)
                 }
-                if match {
-                    return t[i].code
-                }
-            }
+            })
+            throw HTMLSpecialCharactersError.invalidEscapeSquence
+        } catch HTMLSpecialCharactersError.notErrorMatchedUnicode(let code) {
+            return code
         }
-        throw HTMLSpecialCharactersError.invalidEscapeSquence
     }
 }
 
