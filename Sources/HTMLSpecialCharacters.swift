@@ -8,6 +8,9 @@
 
 import Foundation
 
+// MARK: - Table for unescaping
+
+// Structure as LUT(look up table)
 private struct HtmlUnescapeMap {
     let unescapingCodes: [unichar]
     let code: unichar
@@ -17,14 +20,29 @@ private struct HtmlUnescapeMap {
     }
 }
 
-private struct HtmlEscapeMap {
-    let unescapingCodes: [unichar]
-    let code: unichar
-    let count: Int
-    init(_ c: unichar, _ u: [unichar]) {
-        unescapingCodes = u
-        code = c
-        count = unescapingCodes.count
+/**
+ Get array of HtmlUnescapeMap according to the length of HTML code.
+ - parameter length: The length of HTML code to be unescaped.
+ - returns: Array of HtmlUnescapeMap.
+ */
+private func getUnescapeTable(length: Int) -> [HtmlUnescapeMap]? {
+    switch length {
+    case 2:
+        return unicodeHtmlUnescapeMapNameLength_2
+    case 3:
+        return unicodeHtmlUnescapeMapNameLength_3
+    case 4:
+        return unicodeHtmlUnescapeMapNameLength_4
+    case 5:
+        return unicodeHtmlUnescapeMapNameLength_5
+    case 6:
+        return unicodeHtmlUnescapeMapNameLength_6
+    case 7:
+        return unicodeHtmlUnescapeMapNameLength_7
+    case 8:
+        return unicodeHtmlUnescapeMapNameLength_8
+    default:
+        return nil
     }
 }
 
@@ -302,261 +320,19 @@ private let unicodeHtmlUnescapeMapNameLength_8: [HtmlUnescapeMap] = [
 	HtmlUnescapeMap([116, 104, 101, 116, 97, 115, 121, 109], 977) // "thetasym" => "ϑ"
 ]
 
-private let unicodeHtmlEscapeMapForAscii: [HtmlEscapeMap] = [
-    HtmlEscapeMap(34, [38, 113, 117, 111, 116, 59]), // => "quot"
-    HtmlEscapeMap(38, [38, 97, 109, 112, 59]), // => "amp"
-    HtmlEscapeMap(39, [38, 97, 112, 111, 115, 59]), // => "apos"
-    HtmlEscapeMap(60, [38, 108, 116, 59]), // => "lt"
-    HtmlEscapeMap(62, [38, 103, 116, 59]), // => "gt"
-    HtmlEscapeMap(160, [38, 110, 98, 115, 112, 59]), // => "nbsp"
-    HtmlEscapeMap(161, [38, 105, 101, 120, 99, 108, 59]), // => "iexcl"
-    HtmlEscapeMap(162, [38, 99, 101, 110, 116, 59]), // => "cent"
-    HtmlEscapeMap(163, [38, 112, 111, 117, 110, 100, 59]), // => "pound"
-    HtmlEscapeMap(164, [38, 99, 117, 114, 114, 101, 110, 59]), // => "curren"
-    HtmlEscapeMap(165, [38, 121, 101, 110, 59]), // => "yen"
-    HtmlEscapeMap(166, [38, 98, 114, 118, 98, 97, 114, 59]), // => "brvbar"
-    HtmlEscapeMap(167, [38, 115, 101, 99, 116, 59]), // => "sect"
-    HtmlEscapeMap(168, [38, 117, 109, 108, 59]), // => "uml"
-    HtmlEscapeMap(169, [38, 99, 111, 112, 121, 59]), // => "copy"
-    HtmlEscapeMap(170, [38, 111, 114, 100, 102, 59]), // => "ordf"
-    HtmlEscapeMap(171, [38, 108, 97, 113, 117, 111, 59]), // => "laquo"
-    HtmlEscapeMap(172, [38, 110, 111, 116, 59]), // => "not"
-    HtmlEscapeMap(173, [38, 115, 104, 121, 59]), // => "shy"
-    HtmlEscapeMap(174, [38, 114, 101, 103, 59]), // => "reg"
-    HtmlEscapeMap(175, [38, 109, 97, 99, 114, 59]), // => "macr"
-    HtmlEscapeMap(176, [38, 100, 101, 103, 59]), // => "deg"
-    HtmlEscapeMap(177, [38, 112, 108, 117, 115, 109, 110, 59]), // => "plusmn"
-    HtmlEscapeMap(178, [38, 115, 117, 112, 50, 59]), // => "sup2"
-    HtmlEscapeMap(179, [38, 115, 117, 112, 51, 59]), // => "sup3"
-    HtmlEscapeMap(180, [38, 97, 99, 117, 116, 101, 59]), // => "acute"
-    HtmlEscapeMap(181, [38, 109, 105, 99, 114, 111, 59]), // => "micro"
-    HtmlEscapeMap(182, [38, 112, 97, 114, 97, 59]), // => "para"
-    HtmlEscapeMap(183, [38, 109, 105, 100, 100, 111, 116, 59]), // => "middot"
-    HtmlEscapeMap(184, [38, 99, 101, 100, 105, 108, 59]), // => "cedil"
-    HtmlEscapeMap(185, [38, 115, 117, 112, 49, 59]), // => "sup1"
-    HtmlEscapeMap(186, [38, 111, 114, 100, 109, 59]), // => "ordm"
-    HtmlEscapeMap(187, [38, 114, 97, 113, 117, 111, 59]), // => "raquo"
-    HtmlEscapeMap(188, [38, 102, 114, 97, 99, 49, 52, 59]), // => "frac14"
-    HtmlEscapeMap(189, [38, 102, 114, 97, 99, 49, 50, 59]), // => "frac12"
-    HtmlEscapeMap(190, [38, 102, 114, 97, 99, 51, 52, 59]), // => "frac34"
-    HtmlEscapeMap(191, [38, 105, 113, 117, 101, 115, 116, 59]), // => "iquest"
-    HtmlEscapeMap(192, [38, 65, 103, 114, 97, 118, 101, 59]), // => "Agrave"
-    HtmlEscapeMap(193, [38, 65, 97, 99, 117, 116, 101, 59]), // => "Aacute"
-    HtmlEscapeMap(194, [38, 65, 99, 105, 114, 99, 59]), // => "Acirc"
-    HtmlEscapeMap(195, [38, 65, 116, 105, 108, 100, 101, 59]), // => "Atilde"
-    HtmlEscapeMap(196, [38, 65, 117, 109, 108, 59]), // => "Auml"
-    HtmlEscapeMap(197, [38, 65, 114, 105, 110, 103, 59]), // => "Aring"
-    HtmlEscapeMap(198, [38, 65, 69, 108, 105, 103, 59]), // => "AElig"
-    HtmlEscapeMap(199, [38, 67, 99, 101, 100, 105, 108, 59]), // => "Ccedil"
-    HtmlEscapeMap(200, [38, 69, 103, 114, 97, 118, 101, 59]), // => "Egrave"
-    HtmlEscapeMap(201, [38, 69, 97, 99, 117, 116, 101, 59]), // => "Eacute"
-    HtmlEscapeMap(202, [38, 69, 99, 105, 114, 99, 59]), // => "Ecirc"
-    HtmlEscapeMap(203, [38, 69, 117, 109, 108, 59]), // => "Euml"
-    HtmlEscapeMap(204, [38, 73, 103, 114, 97, 118, 101, 59]), // => "Igrave"
-    HtmlEscapeMap(205, [38, 73, 97, 99, 117, 116, 101, 59]), // => "Iacute"
-    HtmlEscapeMap(206, [38, 73, 99, 105, 114, 99, 59]), // => "Icirc"
-    HtmlEscapeMap(207, [38, 73, 117, 109, 108, 59]), // => "Iuml"
-    HtmlEscapeMap(208, [38, 69, 84, 72, 59]), // => "ETH"
-    HtmlEscapeMap(209, [38, 78, 116, 105, 108, 100, 101, 59]), // => "Ntilde"
-    HtmlEscapeMap(210, [38, 79, 103, 114, 97, 118, 101, 59]), // => "Ograve"
-    HtmlEscapeMap(211, [38, 79, 97, 99, 117, 116, 101, 59]), // => "Oacute"
-    HtmlEscapeMap(212, [38, 79, 99, 105, 114, 99, 59]), // => "Ocirc"
-    HtmlEscapeMap(213, [38, 79, 116, 105, 108, 100, 101, 59]), // => "Otilde"
-    HtmlEscapeMap(214, [38, 79, 117, 109, 108, 59]), // => "Ouml"
-    HtmlEscapeMap(215, [38, 116, 105, 109, 101, 115, 59]), // => "times"
-    HtmlEscapeMap(216, [38, 79, 115, 108, 97, 115, 104, 59]), // => "Oslash"
-    HtmlEscapeMap(217, [38, 85, 103, 114, 97, 118, 101, 59]), // => "Ugrave"
-    HtmlEscapeMap(218, [38, 85, 97, 99, 117, 116, 101, 59]), // => "Uacute"
-    HtmlEscapeMap(219, [38, 85, 99, 105, 114, 99, 59]), // => "Ucirc"
-    HtmlEscapeMap(220, [38, 85, 117, 109, 108, 59]), // => "Uuml"
-    HtmlEscapeMap(221, [38, 89, 97, 99, 117, 116, 101, 59]), // => "Yacute"
-    HtmlEscapeMap(222, [38, 84, 72, 79, 82, 78, 59]), // => "THORN"
-    HtmlEscapeMap(223, [38, 115, 122, 108, 105, 103, 59]), // => "szlig"
-    HtmlEscapeMap(224, [38, 97, 103, 114, 97, 118, 101, 59]), // => "agrave"
-    HtmlEscapeMap(225, [38, 97, 97, 99, 117, 116, 101, 59]), // => "aacute"
-    HtmlEscapeMap(226, [38, 97, 99, 105, 114, 99, 59]), // => "acirc"
-    HtmlEscapeMap(227, [38, 97, 116, 105, 108, 100, 101, 59]), // => "atilde"
-    HtmlEscapeMap(228, [38, 97, 117, 109, 108, 59]), // => "auml"
-    HtmlEscapeMap(229, [38, 97, 114, 105, 110, 103, 59]), // => "aring"
-    HtmlEscapeMap(230, [38, 97, 101, 108, 105, 103, 59]), // => "aelig"
-    HtmlEscapeMap(231, [38, 99, 99, 101, 100, 105, 108, 59]), // => "ccedil"
-    HtmlEscapeMap(232, [38, 101, 103, 114, 97, 118, 101, 59]), // => "egrave"
-    HtmlEscapeMap(233, [38, 101, 97, 99, 117, 116, 101, 59]), // => "eacute"
-    HtmlEscapeMap(234, [38, 101, 99, 105, 114, 99, 59]), // => "ecirc"
-    HtmlEscapeMap(235, [38, 101, 117, 109, 108, 59]), // => "euml"
-    HtmlEscapeMap(236, [38, 105, 103, 114, 97, 118, 101, 59]), // => "igrave"
-    HtmlEscapeMap(237, [38, 105, 97, 99, 117, 116, 101, 59]), // => "iacute"
-    HtmlEscapeMap(238, [38, 105, 99, 105, 114, 99, 59]), // => "icirc"
-    HtmlEscapeMap(239, [38, 105, 117, 109, 108, 59]), // => "iuml"
-    HtmlEscapeMap(240, [38, 101, 116, 104, 59]), // => "eth"
-    HtmlEscapeMap(241, [38, 110, 116, 105, 108, 100, 101, 59]), // => "ntilde"
-    HtmlEscapeMap(242, [38, 111, 103, 114, 97, 118, 101, 59]), // => "ograve"
-    HtmlEscapeMap(243, [38, 111, 97, 99, 117, 116, 101, 59]), // => "oacute"
-    HtmlEscapeMap(244, [38, 111, 99, 105, 114, 99, 59]), // => "ocirc"
-    HtmlEscapeMap(245, [38, 111, 116, 105, 108, 100, 101, 59]), // => "otilde"
-    HtmlEscapeMap(246, [38, 111, 117, 109, 108, 59]), // => "ouml"
-    HtmlEscapeMap(247, [38, 100, 105, 118, 105, 100, 101, 59]), // => "divide"
-    HtmlEscapeMap(248, [38, 111, 115, 108, 97, 115, 104, 59]), // => "oslash"
-    HtmlEscapeMap(249, [38, 117, 103, 114, 97, 118, 101, 59]), // => "ugrave"
-    HtmlEscapeMap(250, [38, 117, 97, 99, 117, 116, 101, 59]), // => "uacute"
-    HtmlEscapeMap(251, [38, 117, 99, 105, 114, 99, 59]), // => "ucirc"
-    HtmlEscapeMap(252, [38, 117, 117, 109, 108, 59]), // => "uuml"
-    HtmlEscapeMap(253, [38, 121, 97, 99, 117, 116, 101, 59]), // => "yacute"
-    HtmlEscapeMap(254, [38, 116, 104, 111, 114, 110, 59]), // => "thorn"
-    HtmlEscapeMap(255, [38, 121, 117, 109, 108, 59]), // => "yuml"
-    HtmlEscapeMap(338, [38, 79, 69, 108, 105, 103, 59]), // => "OElig"
-    HtmlEscapeMap(339, [38, 111, 101, 108, 105, 103, 59]), // => "oelig"
-    HtmlEscapeMap(352, [38, 83, 99, 97, 114, 111, 110, 59]), // => "Scaron"
-    HtmlEscapeMap(353, [38, 115, 99, 97, 114, 111, 110, 59]), // => "scaron"
-    HtmlEscapeMap(376, [38, 89, 117, 109, 108, 59]), // => "Yuml"
-    HtmlEscapeMap(402, [38, 102, 110, 111, 102, 59]), // => "fnof"
-    HtmlEscapeMap(710, [38, 99, 105, 114, 99, 59]), // => "circ"
-    HtmlEscapeMap(732, [38, 116, 105, 108, 100, 101, 59]), // => "tilde"
-    HtmlEscapeMap(913, [38, 65, 108, 112, 104, 97, 59]), // => "Alpha"
-    HtmlEscapeMap(914, [38, 66, 101, 116, 97, 59]), // => "Beta"
-    HtmlEscapeMap(915, [38, 71, 97, 109, 109, 97, 59]), // => "Gamma"
-    HtmlEscapeMap(916, [38, 68, 101, 108, 116, 97, 59]), // => "Delta"
-    HtmlEscapeMap(917, [38, 69, 112, 115, 105, 108, 111, 110, 59]), // => "Epsilon"
-    HtmlEscapeMap(918, [38, 90, 101, 116, 97, 59]), // => "Zeta"
-    HtmlEscapeMap(919, [38, 69, 116, 97, 59]), // => "Eta"
-    HtmlEscapeMap(920, [38, 84, 104, 101, 116, 97, 59]), // => "Theta"
-    HtmlEscapeMap(921, [38, 73, 111, 116, 97, 59]), // => "Iota"
-    HtmlEscapeMap(922, [38, 75, 97, 112, 112, 97, 59]), // => "Kappa"
-    HtmlEscapeMap(923, [38, 76, 97, 109, 98, 100, 97, 59]), // => "Lambda"
-    HtmlEscapeMap(924, [38, 77, 117, 59]), // => "Mu"
-    HtmlEscapeMap(925, [38, 78, 117, 59]), // => "Nu"
-    HtmlEscapeMap(926, [38, 88, 105, 59]), // => "Xi"
-    HtmlEscapeMap(927, [38, 79, 109, 105, 99, 114, 111, 110, 59]), // => "Omicron"
-    HtmlEscapeMap(928, [38, 80, 105, 59]), // => "Pi"
-    HtmlEscapeMap(929, [38, 82, 104, 111, 59]), // => "Rho"
-    HtmlEscapeMap(931, [38, 83, 105, 103, 109, 97, 59]), // => "Sigma"
-    HtmlEscapeMap(932, [38, 84, 97, 117, 59]), // => "Tau"
-    HtmlEscapeMap(933, [38, 85, 112, 115, 105, 108, 111, 110, 59]), // => "Upsilon"
-    HtmlEscapeMap(934, [38, 80, 104, 105, 59]), // => "Phi"
-    HtmlEscapeMap(935, [38, 67, 104, 105, 59]), // => "Chi"
-    HtmlEscapeMap(936, [38, 80, 115, 105, 59]), // => "Psi"
-    HtmlEscapeMap(937, [38, 79, 109, 101, 103, 97, 59]), // => "Omega"
-    HtmlEscapeMap(945, [38, 97, 108, 112, 104, 97, 59]), // => "alpha"
-    HtmlEscapeMap(946, [38, 98, 101, 116, 97, 59]), // => "beta"
-    HtmlEscapeMap(947, [38, 103, 97, 109, 109, 97, 59]), // => "gamma"
-    HtmlEscapeMap(948, [38, 100, 101, 108, 116, 97, 59]), // => "delta"
-    HtmlEscapeMap(949, [38, 101, 112, 115, 105, 108, 111, 110, 59]), // => "epsilon"
-    HtmlEscapeMap(950, [38, 122, 101, 116, 97, 59]), // => "zeta"
-    HtmlEscapeMap(951, [38, 101, 116, 97, 59]), // => "eta"
-    HtmlEscapeMap(952, [38, 116, 104, 101, 116, 97, 59]), // => "theta"
-    HtmlEscapeMap(953, [38, 105, 111, 116, 97, 59]), // => "iota"
-    HtmlEscapeMap(954, [38, 107, 97, 112, 112, 97, 59]), // => "kappa"
-    HtmlEscapeMap(955, [38, 108, 97, 109, 98, 100, 97, 59]), // => "lambda"
-    HtmlEscapeMap(956, [38, 109, 117, 59]), // => "mu"
-    HtmlEscapeMap(957, [38, 110, 117, 59]), // => "nu"
-    HtmlEscapeMap(958, [38, 120, 105, 59]), // => "xi"
-    HtmlEscapeMap(959, [38, 111, 109, 105, 99, 114, 111, 110, 59]), // => "omicron"
-    HtmlEscapeMap(960, [38, 112, 105, 59]), // => "pi"
-    HtmlEscapeMap(961, [38, 114, 104, 111, 59]), // => "rho"
-    HtmlEscapeMap(962, [38, 115, 105, 103, 109, 97, 102, 59]), // => "sigmaf"
-    HtmlEscapeMap(963, [38, 115, 105, 103, 109, 97, 59]), // => "sigma"
-    HtmlEscapeMap(964, [38, 116, 97, 117, 59]), // => "tau"
-    HtmlEscapeMap(965, [38, 117, 112, 115, 105, 108, 111, 110, 59]), // => "upsilon"
-    HtmlEscapeMap(966, [38, 112, 104, 105, 59]), // => "phi"
-    HtmlEscapeMap(967, [38, 99, 104, 105, 59]), // => "chi"
-    HtmlEscapeMap(968, [38, 112, 115, 105, 59]), // => "psi"
-    HtmlEscapeMap(969, [38, 111, 109, 101, 103, 97, 59]), // => "omega"
-    HtmlEscapeMap(977, [38, 116, 104, 101, 116, 97, 115, 121, 109, 59]), // => "thetasym"
-    HtmlEscapeMap(978, [38, 117, 112, 115, 105, 104, 59]), // => "upsih"
-    HtmlEscapeMap(982, [38, 112, 105, 118, 59]), // => "piv"
-    HtmlEscapeMap(8194, [38, 101, 110, 115, 112, 59]), // => "ensp"
-    HtmlEscapeMap(8195, [38, 101, 109, 115, 112, 59]), // => "emsp"
-    HtmlEscapeMap(8201, [38, 116, 104, 105, 110, 115, 112, 59]), // => "thinsp"
-    HtmlEscapeMap(8204, [38, 122, 119, 110, 106, 59]), // => "zwnj"
-    HtmlEscapeMap(8205, [38, 122, 119, 106, 59]), // => "zwj"
-    HtmlEscapeMap(8206, [38, 108, 114, 109, 59]), // => "lrm"
-    HtmlEscapeMap(8207, [38, 114, 108, 109, 59]), // => "rlm"
-    HtmlEscapeMap(8211, [38, 110, 100, 97, 115, 104, 59]), // => "ndash"
-    HtmlEscapeMap(8212, [38, 109, 100, 97, 115, 104, 59]), // => "mdash"
-    HtmlEscapeMap(8216, [38, 108, 115, 113, 117, 111, 59]), // => "lsquo"
-    HtmlEscapeMap(8217, [38, 114, 115, 113, 117, 111, 59]), // => "rsquo"
-    HtmlEscapeMap(8218, [38, 115, 98, 113, 117, 111, 59]), // => "sbquo"
-    HtmlEscapeMap(8220, [38, 108, 100, 113, 117, 111, 59]), // => "ldquo"
-    HtmlEscapeMap(8221, [38, 114, 100, 113, 117, 111, 59]), // => "rdquo"
-    HtmlEscapeMap(8222, [38, 98, 100, 113, 117, 111, 59]), // => "bdquo"
-    HtmlEscapeMap(8224, [38, 100, 97, 103, 103, 101, 114, 59]), // => "dagger"
-    HtmlEscapeMap(8225, [38, 68, 97, 103, 103, 101, 114, 59]), // => "Dagger"
-    HtmlEscapeMap(8226, [38, 98, 117, 108, 108, 59]), // => "bull"
-    HtmlEscapeMap(8230, [38, 104, 101, 108, 108, 105, 112, 59]), // => "hellip"
-    HtmlEscapeMap(8240, [38, 112, 101, 114, 109, 105, 108, 59]), // => "permil"
-    HtmlEscapeMap(8242, [38, 112, 114, 105, 109, 101, 59]), // => "prime"
-    HtmlEscapeMap(8243, [38, 80, 114, 105, 109, 101, 59]), // => "Prime"
-    HtmlEscapeMap(8249, [38, 108, 115, 97, 113, 117, 111, 59]), // => "lsaquo"
-    HtmlEscapeMap(8250, [38, 114, 115, 97, 113, 117, 111, 59]), // => "rsaquo"
-    HtmlEscapeMap(8254, [38, 111, 108, 105, 110, 101, 59]), // => "oline"
-    HtmlEscapeMap(8260, [38, 102, 114, 97, 115, 108, 59]), // => "frasl"
-    HtmlEscapeMap(8364, [38, 101, 117, 114, 111, 59]), // => "euro"
-    HtmlEscapeMap(8465, [38, 105, 109, 97, 103, 101, 59]), // => "image"
-    HtmlEscapeMap(8472, [38, 119, 101, 105, 101, 114, 112, 59]), // => "weierp"
-    HtmlEscapeMap(8476, [38, 114, 101, 97, 108, 59]), // => "real"
-    HtmlEscapeMap(8482, [38, 116, 114, 97, 100, 101, 59]), // => "trade"
-    HtmlEscapeMap(8501, [38, 97, 108, 101, 102, 115, 121, 109, 59]), // => "alefsym"
-    HtmlEscapeMap(8592, [38, 108, 97, 114, 114, 59]), // => "larr"
-    HtmlEscapeMap(8593, [38, 117, 97, 114, 114, 59]), // => "uarr"
-    HtmlEscapeMap(8594, [38, 114, 97, 114, 114, 59]), // => "rarr"
-    HtmlEscapeMap(8595, [38, 100, 97, 114, 114, 59]), // => "darr"
-    HtmlEscapeMap(8596, [38, 104, 97, 114, 114, 59]), // => "harr"
-    HtmlEscapeMap(8629, [38, 99, 114, 97, 114, 114, 59]), // => "crarr"
-    HtmlEscapeMap(8656, [38, 108, 65, 114, 114, 59]), // => "lArr"
-    HtmlEscapeMap(8657, [38, 117, 65, 114, 114, 59]), // => "uArr"
-    HtmlEscapeMap(8658, [38, 114, 65, 114, 114, 59]), // => "rArr"
-    HtmlEscapeMap(8659, [38, 100, 65, 114, 114, 59]), // => "dArr"
-    HtmlEscapeMap(8660, [38, 104, 65, 114, 114, 59]), // => "hArr"
-    HtmlEscapeMap(8704, [38, 102, 111, 114, 97, 108, 108, 59]), // => "forall"
-    HtmlEscapeMap(8706, [38, 112, 97, 114, 116, 59]), // => "part"
-    HtmlEscapeMap(8707, [38, 101, 120, 105, 115, 116, 59]), // => "exist"
-    HtmlEscapeMap(8709, [38, 101, 109, 112, 116, 121, 59]), // => "empty"
-    HtmlEscapeMap(8711, [38, 110, 97, 98, 108, 97, 59]), // => "nabla"
-    HtmlEscapeMap(8712, [38, 105, 115, 105, 110, 59]), // => "isin"
-    HtmlEscapeMap(8713, [38, 110, 111, 116, 105, 110, 59]), // => "notin"
-    HtmlEscapeMap(8715, [38, 110, 105, 59]), // => "ni"
-    HtmlEscapeMap(8719, [38, 112, 114, 111, 100, 59]), // => "prod"
-    HtmlEscapeMap(8721, [38, 115, 117, 109, 59]), // => "sum"
-    HtmlEscapeMap(8722, [38, 109, 105, 110, 117, 115, 59]), // => "minus"
-    HtmlEscapeMap(8727, [38, 108, 111, 119, 97, 115, 116, 59]), // => "lowast"
-    HtmlEscapeMap(8730, [38, 114, 97, 100, 105, 99, 59]), // => "radic"
-    HtmlEscapeMap(8733, [38, 112, 114, 111, 112, 59]), // => "prop"
-    HtmlEscapeMap(8734, [38, 105, 110, 102, 105, 110, 59]), // => "infin"
-    HtmlEscapeMap(8736, [38, 97, 110, 103, 59]), // => "ang"
-    HtmlEscapeMap(8743, [38, 97, 110, 100, 59]), // => "and"
-    HtmlEscapeMap(8744, [38, 111, 114, 59]), // => "or"
-    HtmlEscapeMap(8745, [38, 99, 97, 112, 59]), // => "cap"
-    HtmlEscapeMap(8746, [38, 99, 117, 112, 59]), // => "cup"
-    HtmlEscapeMap(8747, [38, 105, 110, 116, 59]), // => "int"
-    HtmlEscapeMap(8756, [38, 116, 104, 101, 114, 101, 52, 59]), // => "there4"
-    HtmlEscapeMap(8764, [38, 115, 105, 109, 59]), // => "sim"
-    HtmlEscapeMap(8773, [38, 99, 111, 110, 103, 59]), // => "cong"
-    HtmlEscapeMap(8776, [38, 97, 115, 121, 109, 112, 59]), // => "asymp"
-    HtmlEscapeMap(8800, [38, 110, 101, 59]), // => "ne"
-    HtmlEscapeMap(8801, [38, 101, 113, 117, 105, 118, 59]), // => "equiv"
-    HtmlEscapeMap(8804, [38, 108, 101, 59]), // => "le"
-    HtmlEscapeMap(8805, [38, 103, 101, 59]), // => "ge"
-    HtmlEscapeMap(8834, [38, 115, 117, 98, 59]), // => "sub"
-    HtmlEscapeMap(8835, [38, 115, 117, 112, 59]), // => "sup"
-    HtmlEscapeMap(8836, [38, 110, 115, 117, 98, 59]), // => "nsub"
-    HtmlEscapeMap(8838, [38, 115, 117, 98, 101, 59]), // => "sube"
-    HtmlEscapeMap(8839, [38, 115, 117, 112, 101, 59]), // => "supe"
-    HtmlEscapeMap(8853, [38, 111, 112, 108, 117, 115, 59]), // => "oplus"
-    HtmlEscapeMap(8855, [38, 111, 116, 105, 109, 101, 115, 59]), // => "otimes"
-    HtmlEscapeMap(8869, [38, 112, 101, 114, 112, 59]), // => "perp"
-    HtmlEscapeMap(8901, [38, 115, 100, 111, 116, 59]), // => "sdot"
-    HtmlEscapeMap(8968, [38, 108, 99, 101, 105, 108, 59]), // => "lceil"
-    HtmlEscapeMap(8969, [38, 114, 99, 101, 105, 108, 59]), // => "rceil"
-    HtmlEscapeMap(8970, [38, 108, 102, 108, 111, 111, 114, 59]), // => "lfloor"
-    HtmlEscapeMap(8971, [38, 114, 102, 108, 111, 111, 114, 59]), // => "rfloor"
-    HtmlEscapeMap(9001, [38, 108, 97, 110, 103, 59]), // => "lang"
-    HtmlEscapeMap(9002, [38, 114, 97, 110, 103, 59]), // => "rang"
-    HtmlEscapeMap(9674, [38, 108, 111, 122, 59]), // => "loz"
-    HtmlEscapeMap(9824, [38, 115, 112, 97, 100, 101, 115, 59]), // => "spades"
-    HtmlEscapeMap(9827, [38, 99, 108, 117, 98, 115, 59]), // => "clubs"
-    HtmlEscapeMap(9829, [38, 104, 101, 97, 114, 116, 115, 59]), // => "hearts"
-    HtmlEscapeMap(9830, [38, 100, 105, 97, 109, 115, 59]) // => "diams"
-]
+// MARK: - Table for escaping
+
+private struct HtmlEscapeMap {
+    let unescapingCodes: [unichar]
+    let code: unichar
+    let count: Int
+    init(_ c: unichar, _ u: [unichar]) {
+        unescapingCodes = u
+        code = c
+        count = unescapingCodes.count
+    }
+}
+
 private let unicodeHtmlEscapeMapForUTF8: [HtmlEscapeMap] = [
     HtmlEscapeMap(34, [38, 113, 117, 111, 116, 59]), // => "quot"
     HtmlEscapeMap(38, [38, 97, 109, 112, 59]), // => "amp"
@@ -593,27 +369,11 @@ private let unicodeHtmlEscapeMapForUTF8: [HtmlEscapeMap] = [
     HtmlEscapeMap(8364, [38, 101, 117, 114, 111, 59]) // => "euro"
 ]
 
-private func getTable(length: Int) -> [HtmlUnescapeMap]? {
-    switch length {
-    case 2:
-        return unicodeHtmlUnescapeMapNameLength_2
-    case 3:
-        return unicodeHtmlUnescapeMapNameLength_3
-    case 4:
-        return unicodeHtmlUnescapeMapNameLength_4
-    case 5:
-        return unicodeHtmlUnescapeMapNameLength_5
-    case 6:
-        return unicodeHtmlUnescapeMapNameLength_6
-    case 7:
-        return unicodeHtmlUnescapeMapNameLength_7
-    case 8:
-        return unicodeHtmlUnescapeMapNameLength_8
-    default:
-        return nil
-    }
-}
+// MARK: -
 
+/**
+ Comparator for HtmlEscapeMap structure.
+ */
 private func comp(v1: unichar, v2: HtmlEscapeMap) -> Int {
     if v1 > v2.code {
         return 1
@@ -624,7 +384,24 @@ private func comp(v1: unichar, v2: HtmlEscapeMap) -> Int {
     }
 }
 
-private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
+/**
+ Decode, convert unicode scalar value to UTF16 code.
+ */
+private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
+    // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
+    let w: UInt  = (unicode & 0b00000000000111110000000000000000) >> 16 - 1
+    let x1: UInt = (unicode & 0b00000000000000001111110000000000) >> 10
+    let x2: UInt = (unicode & 0b00000000000000000000001111111111) >> 0
+    let u1: UInt16 = UInt16((0b11011000 << 8) + (w << 6) + x1)
+    let u2: UInt16 = UInt16(UInt(0b11011100 << 8) + x2)
+    return [u1, u2]
+}
+
+/**
+ Encode, convert UTF16 code to unicode scalar value.
+ */
+private func encodeUTF16ToUnicodeScalar(u1: unichar, u2: unichar) -> [UInt]? {
+    // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
     guard u1 > (0b11011000 << 8) else { return nil }
     guard u1 < (0b11011100 << 8) else { return nil }
     guard u2 > (0b11011100 << 8) else { return nil }
@@ -634,16 +411,16 @@ private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
     let x1 = (u1 & 0b0000000000111111)
     let x2 = (u2 & 0b0000001111111111)
     let scalar: UInt = (UInt(u) << 16) + (UInt(x1) << 10) + UInt(x2)
-    
-    var accum = Int(0)
-    
-    let hex = (0...3).reversed().map({ (scalar >> ($0 * 8)) & 255 })
+    return (0...3).reversed().map({ (scalar >> ($0 * 8)) & 255 })
+}
+
+private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
+    guard let hex = encodeUTF16ToUnicodeScalar(u1: u1, u2: u2) else { return nil }
     
     let ampersand = unichar(UInt8(ascii: "&"))
     let semicolon = unichar(UInt8(ascii: ";"))
     let sharp = unichar(UInt8(ascii: "#"))
     let x = unichar(UInt8(ascii: "x"))
-    
     let uc: [unichar] = [
         unichar(UInt8(ascii: "0")),
         unichar(UInt8(ascii: "1")),
@@ -662,6 +439,23 @@ private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
         unichar(UInt8(ascii: "E")),
         unichar(UInt8(ascii: "F"))
     ]
+    
+//    let a = hex.map({ [Int($0 / 16), Int($0 % 16)] }).flatMap({$0})
+//    
+//    var flag = false
+//    let b = a.filter({
+//        if $0 != 0 || flag {
+//            flag = true
+//            return true
+//        } else {
+//            return false
+//        }
+//    })
+//    print(b)
+//    
+//    let c = b.map({uc[$0]})
+    
+    var accum = Int(0)
     var output: [unichar] = [ampersand, sharp, x]
     hex.forEach({
         let c1 = Int($0 / 16)
@@ -809,16 +603,6 @@ public enum HTMLSpecialCharactersError: Error {
     case notErrorMatchedUnicode(code: unichar)
 }
 
-private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
-    // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
-    let w: UInt  = (unicode & 0b00000000000111110000000000000000) >> 16 - 1
-    let x1: UInt = (unicode & 0b00000000000000001111110000000000) >> 10
-    let x2: UInt = (unicode & 0b00000000000000000000001111111111) >> 0
-    let u1: UInt16 = UInt16((0b11011000 << 8) + (w << 6) + x1)
-    let u2: UInt16 = UInt16(UInt(0b11011100 << 8) + x2)
-    return [u1, u2]
-}
-
 private func hexStream2UnicodeChars<T>(utf16Storage: T) throws -> [unichar] where T: ContiguousStorage, T.Iterator.Element == unichar {
     let utf16: UInt = try utf16Storage.reduce(0) {
         switch $1 {
@@ -858,7 +642,7 @@ private func matchUnicodeChars<T>(utf16Storage: T) throws -> unichar where T: Co
         guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
         let length = $0.count
         do {
-            try getTable(length: length)?.forEach({
+            try getUnescapeTable(length: length)?.forEach({
                 if memcmp($0.unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
                     throw HTMLSpecialCharactersError.notErrorMatchedUnicode(code: $0.code)
                 }
