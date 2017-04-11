@@ -322,6 +322,7 @@ private let unicodeHtmlUnescapeMapNameLength_8: [HtmlUnescapeMap] = [
 
 // MARK: - Table for escaping
 
+// Structure as LUT(look up table)
 private struct HtmlEscapeMap {
     let unescapingCodes: [unichar]
     let code: unichar
@@ -386,6 +387,8 @@ private func comp(v1: unichar, v2: HtmlEscapeMap) -> Int {
 
 /**
  Decode, convert unicode scalar value to UTF16 code.
+ - parameter unicode: 
+ - returns:
  */
 private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
     // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
@@ -399,8 +402,11 @@ private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
 
 /**
  Encode, convert UTF16 code to unicode scalar value.
+ - parameter u1:
+ - parameter u2:
+ - returns:
  */
-private func encodeUTF16ToUnicodeScalar(u1: unichar, u2: unichar) -> [UInt]? {
+private func encodeUTF16(u1: unichar, u2: unichar) -> [UInt]? {
     // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
     guard u1 > (0b11011000 << 8) else { return nil }
     guard u1 < (0b11011100 << 8) else { return nil }
@@ -414,66 +420,36 @@ private func encodeUTF16ToUnicodeScalar(u1: unichar, u2: unichar) -> [UInt]? {
     return (0...3).reversed().map({ (scalar >> ($0 * 8)) & 255 })
 }
 
+/**
+ Escape a two special character code to string which is composed of UTF16 code.
+ - parameter u1:
+ - parameter u2:
+ - returns:
+ */
 private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
-    guard let hex = encodeUTF16ToUnicodeScalar(u1: u1, u2: u2) else { return nil }
+    guard let hex = encodeUTF16(u1: u1, u2: u2) else { return nil }
     
     let ampersand = unichar(UInt8(ascii: "&"))
     let semicolon = unichar(UInt8(ascii: ";"))
     let sharp = unichar(UInt8(ascii: "#"))
     let x = unichar(UInt8(ascii: "x"))
-    let uc: [unichar] = [
-        unichar(UInt8(ascii: "0")),
-        unichar(UInt8(ascii: "1")),
-        unichar(UInt8(ascii: "2")),
-        unichar(UInt8(ascii: "3")),
-        unichar(UInt8(ascii: "4")),
-        unichar(UInt8(ascii: "5")),
-        unichar(UInt8(ascii: "6")),
-        unichar(UInt8(ascii: "7")),
-        unichar(UInt8(ascii: "8")),
-        unichar(UInt8(ascii: "9")),
-        unichar(UInt8(ascii: "A")),
-        unichar(UInt8(ascii: "B")),
-        unichar(UInt8(ascii: "C")),
-        unichar(UInt8(ascii: "D")),
-        unichar(UInt8(ascii: "E")),
-        unichar(UInt8(ascii: "F"))
-    ]
-    
-//    let a = hex.map({ [Int($0 / 16), Int($0 % 16)] }).flatMap({$0})
-//    
-//    var flag = false
-//    let b = a.filter({
-//        if $0 != 0 || flag {
-//            flag = true
-//            return true
-//        } else {
-//            return false
-//        }
-//    })
-//    print(b)
-//    
-//    let c = b.map({uc[$0]})
-    
-    var accum = Int(0)
-    var output: [unichar] = [ampersand, sharp, x]
-    hex.forEach({
-        let c1 = Int($0 / 16)
-        accum += c1
-        if accum > 0 {
-            output.append(uc[c1])
+    let uc: [unichar] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"].map({unichar(UInt8(ascii: $0))})
+    let hexCharacters = hex
+        .map({ [Int($0 / 16), Int($0 % 16)] })
+        .flatMap({$0})
+        .reduce([]) { (result, value) -> [Int] in
+            if result.count != 0 || value != 0 { return result + [value] }
+            return result
         }
-        let c2 = Int($0 % 16)
-        accum += c2
-        if accum > 0 {
-            output.append(uc[c2])
-        }
-    })
-    output.append(semicolon)
-    return output
+        .map({uc[$0]})
+    return [ampersand, sharp, x] + hexCharacters + [semicolon]
 }
 
 extension String {
+    
+    /**
+     Returns a new string made from the String by removing all HTML tag.
+     */
     public var removingHTMLTags: String {
         let length = utf16.count
         var buffer = [unichar](repeating: 0, count: utf16.count)
@@ -498,6 +474,9 @@ extension String {
         return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
     }
     
+    /**
+     Returns a new string made from the String by replacing all sequences to be escaped with the matching UTF-8 scalar codes.
+     */
     public var escapeHTML: String {
         let length = utf16.count
         let buffer = UnsafeMutablePointer<unichar>.allocate(capacity: utf16.count)
@@ -532,9 +511,12 @@ extension String {
         }
         return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
     }
-
-    // Original code written by @norio_nomura
-    // https://gist.github.com/norio-nomura/2a79822004e7c89228300cf19595ca99
+    
+    /**
+     Returns a new string made from the String by replacing all HTML unescaped sequences with the matching UTF-8 characters.
+     Original code written by @norio_nomura
+     https://gist.github.com/norio-nomura/2a79822004e7c89228300cf19595ca99
+     */
     public var unescapeHTML: String {
         var buffer = [unichar](repeating: 0, count: utf16.count)
         NSString(string: self).getCharacters(&buffer)
@@ -579,6 +561,10 @@ extension String {
         }
     }
 
+    /**
+     Returns an initialized String object that contains a given number of characters from a given array of Unicode characters.
+     Returns a String initialized by converting given data into Unicode characters using a given encoding.
+     */
     private init<T>(utf16Storage: T) throws where T: ContiguousStorage, T.Iterator.Element == unichar {
         self = try utf16Storage.withUnsafeBufferPointer {
             guard let p = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidBufferSequence }
