@@ -372,6 +372,15 @@ private let unicodeHtmlEscapeMapForUTF8: [HtmlEscapeMap] = [
 
 // MARK: -
 
+/// Error
+private enum HTMLSpecialCharactersError: Error {
+    case invalidHexSquence
+    case invalidDecimalSquence
+    case invalidEscapeSquence
+    case invalidBufferSequence
+    case notErrorMatchedUnicode(code: unichar)
+}
+
 /**
  Comparator for HtmlEscapeMap structure.
  */
@@ -386,15 +395,48 @@ private func comp(v1: unichar, v2: HtmlEscapeMap) -> Int {
 }
 
 /**
- Decode, convert unicode scalar value to UTF16 code.
- - parameter unicode: 
- - returns:
+ Binary search.
+ - parameter key: Query.
+ - parameter sortedArray: Must be sorted in ascending order.
+ - parameter comparator: Comparator for each pair.
+ - returns: Result element among sortedArray and a number of execution of the compator. If no one is matched in the sortedArray, return nil.
  */
-private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
+internal func bsearch<T, U>(with key: T, from sortedArray: [U], comparator: (T, U) -> Int) -> (U, Int)? {
+    var searchCount = 0
+    var startIndex = sortedArray.startIndex
+    var endIndex = sortedArray.endIndex
+    var range = startIndex..<endIndex
+    var middle = startIndex.advanced(by: range.count/2)
+    repeat {
+        range = startIndex..<endIndex
+        middle = startIndex.advanced(by: range.count/2)
+        searchCount += 1
+        let c = comparator(key, sortedArray[middle])
+        if c == 1 {
+            startIndex = middle
+        } else if c == -1 {
+            endIndex = middle
+        } else if c == 0 {
+            return (sortedArray[middle], searchCount)
+        } else {
+            return nil
+        }
+    } while range.count > 1
+    return nil
+}
+
+// MARK: - Unicode
+
+/**
+ Decode, convert unicode scalar value to UTF16 code.
+ - parameter unicode: Unicode scalar value to be decoded.
+ - returns: Array of `unichar`, which contains UTF16 code.
+ */
+private func convertToSurrogatePair(unicodeScalar: UInt) -> [unichar] {
     // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
-    let w: UInt  = (unicode & 0b00000000000111110000000000000000) >> 16 - 1
-    let x1: UInt = (unicode & 0b00000000000000001111110000000000) >> 10
-    let x2: UInt = (unicode & 0b00000000000000000000001111111111) >> 0
+    let w: UInt  = (unicodeScalar & 0b00000000000111110000000000000000) >> 16 - 1
+    let x1: UInt = (unicodeScalar & 0b00000000000000001111110000000000) >> 10
+    let x2: UInt = (unicodeScalar & 0b00000000000000000000001111111111) >> 0
     let u1: UInt16 = UInt16((0b11011000 << 8) + (w << 6) + x1)
     let u2: UInt16 = UInt16(UInt(0b11011100 << 8) + x2)
     return [u1, u2]
@@ -402,11 +444,11 @@ private func decodeUnicodeScalar(unicode: UInt) -> [unichar] {
 
 /**
  Encode, convert UTF16 code to unicode scalar value.
- - parameter u1:
- - parameter u2:
- - returns:
+ - parameter first: First one of a surrogate pair.
+ - parameter second: Second one of a surrogate pair.
+ - returns: Unicode scalar value.
  */
-private func encodeUTF16(u1: unichar, u2: unichar) -> [UInt]? {
+private func convertToUnicodeScalar(firstOfSurrogatePair u1: unichar, second u2: unichar) -> UInt? {
     // This convert algorithm is based on https://en.wikipedia.org/wiki/UTF-16
     guard u1 > (0b11011000 << 8) else { return nil }
     guard u1 < (0b11011100 << 8) else { return nil }
@@ -416,25 +458,26 @@ private func encodeUTF16(u1: unichar, u2: unichar) -> [UInt]? {
     let u  = (u1 & 0b0000001111000000) >> 6 + 1
     let x1 = (u1 & 0b0000000000111111)
     let x2 = (u2 & 0b0000001111111111)
-    let scalar: UInt = (UInt(u) << 16) + (UInt(x1) << 10) + UInt(x2)
-    return (0...3).reversed().map({ (scalar >> ($0 * 8)) & 255 })
+    return (UInt(u) << 16) + (UInt(x1) << 10) + UInt(x2)
 }
 
 /**
- Escape a two special character code to string which is composed of UTF16 code.
- - parameter u1:
- - parameter u2:
- - returns:
+ Convert a surrogate pair to HTML escaping string which is composed of Unicode scalar value.
+ - parameter first: First one of a surrogate pair.
+ - parameter second: Second one of a surrogate pair.
+ - returns: String, HTML escaping string which is composed of Unicode scalar value.
  */
-private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
-    guard let hex = encodeUTF16(u1: u1, u2: u2) else { return nil }
+private func convertToUnicodeScalarString(firstOfSurrogatePair u1: unichar, second u2: unichar) -> [unichar]? {
+    guard let unicodeScalar = convertToUnicodeScalar(firstOfSurrogatePair: u1, second: u2) else { return nil }
+    
+    let hexArray = (0...3).reversed().map({ (unicodeScalar >> ($0 * 8)) & 255 })
     
     let ampersand = unichar(UInt8(ascii: "&"))
     let semicolon = unichar(UInt8(ascii: ";"))
     let sharp = unichar(UInt8(ascii: "#"))
     let x = unichar(UInt8(ascii: "x"))
     let uc: [unichar] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"].map({unichar(UInt8(ascii: $0))})
-    let hexCharacters = hex
+    let hexCharacters = hexArray
         .map({ [Int($0 / 16), Int($0 % 16)] })
         .flatMap({$0})
         .reduce([]) { (result, value) -> [Int] in
@@ -444,6 +487,77 @@ private func escapeUTF16(u1: unichar, u2: unichar) -> [unichar]? {
         .map({uc[$0]})
     return [ampersand, sharp, x] + hexCharacters + [semicolon]
 }
+
+/**
+ Convert a hex UTF code string to the UTF16 code which includes matching UTF-8 characters.
+ */
+private func convertToUTF16Codes<T>(hexCodeStorage utf16Storage: T) throws -> [unichar] where T: ContiguousStorage, T.Iterator.Element == unichar {
+    let utf16: UInt = try utf16Storage.reduce(0) {
+        switch $1 {
+        case 48...57: return UInt($0) << 4 + UInt($1) - 48
+        case 65...70: return UInt($0) << 4 + UInt($1) - 65 + 10
+        case 97...102: return UInt($0) << 4 + UInt($1) - 97 + 10
+        default: throw HTMLSpecialCharactersError.invalidHexSquence
+        }
+    }
+    if utf16 < UInt(unichar.max) {
+        return [unichar(utf16)]
+    } else if utf16 < UInt(0x110000) {
+        return convertToSurrogatePair(unicodeScalar: utf16)
+    } else {
+        throw HTMLSpecialCharactersError.invalidDecimalSquence
+    }
+}
+
+/**
+ Convert a decimal UTF code string to the UTF16 code which includes matching UTF-8 characters.
+ */
+private func convertToUTF16Codes<T>(decimalCodeStorage utf16Storage: T) throws -> [unichar] where T: ContiguousStorage, T.Iterator.Element == unichar {
+    let utf16: UInt = try utf16Storage.reduce(0) {
+        switch $1 {
+        case 48...57: return UInt($0 * 10) + UInt($1) - 48
+        default: throw HTMLSpecialCharactersError.invalidDecimalSquence
+        }
+    }
+    if utf16 < UInt(unichar.max) {
+        return [unichar(utf16)]
+    } else if utf16 < UInt(0x110000) {
+        return convertToSurrogatePair(unicodeScalar: utf16)
+    } else {
+        throw HTMLSpecialCharactersError.invalidDecimalSquence
+    }
+}
+
+/**
+ Convert a standard sequence code string to the UTF16 code which includes matching UTF-8 characters.
+ */
+private func convertToUTF16Codes<T>(standardSequence utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
+    return try utf16Storage.withUnsafeBufferPointer {
+        guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
+        let length = $0.count
+        do {
+            try getUnescapeTable(length: length)?.forEach({
+                if memcmp($0.unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
+                    throw HTMLSpecialCharactersError.notErrorMatchedUnicode(code: $0.code)
+                }
+            })
+            throw HTMLSpecialCharactersError.invalidEscapeSquence
+        } catch HTMLSpecialCharactersError.notErrorMatchedUnicode(let code) {
+            return code
+        }
+    }
+}
+
+// MARK: - Extension
+
+private protocol ContiguousStorage: Sequence {
+    func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Iterator.Element>) throws -> R) rethrows -> R
+}
+extension Array: ContiguousStorage {}
+extension ArraySlice: ContiguousStorage {}
+extension ContiguousArray: ContiguousStorage {}
+
+// MARK: -
 
 extension String {
     
@@ -487,15 +601,15 @@ extension String {
         var start = 0
         for var i in 0..<length {
             if let result = bsearch(with: (buffer + i).pointee, from: unicodeHtmlEscapeMapForUTF8, comparator: comp) {
+                // 2byte character
                 let copyLength = i - start
                 destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
                 let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result.0.unescapingCodes))
                 destinationBuffer.append(pointer, length: MemoryLayout<unichar>.size * result.0.count)
                 start = i + 1
             } else if i < length - 1 {
-                let u1 = (buffer + i).pointee
-                let u2 = (buffer + i + 1).pointee
-                if let result = escapeUTF16(u1: u1, u2: u2) {
+                if let result = convertToUnicodeScalarString(firstOfSurrogatePair: (buffer + i).pointee, second: (buffer + i + 1).pointee) {
+                    // 4byte character, surrogate pair.
                     let copyLength = i - start
                     destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
                     let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result))
@@ -520,13 +634,13 @@ extension String {
     public var unescapeHTML: String {
         var buffer = [unichar](repeating: 0, count: utf16.count)
         NSString(string: self).getCharacters(&buffer)
-
+        
         var end = buffer.endIndex
         let ampersand = unichar(UInt8(ascii: "&"))
         let semicolon = unichar(UInt8(ascii: ";"))
         let sharp = unichar(UInt8(ascii: "#"))
         let hexPrefixes = ["X", "x"].map { unichar(UInt8(ascii: $0)) }
-
+        
         while let begin = buffer.prefix(upTo: end).reversed().index(of: ampersand).map({ buffer.index(before: $0.base) }) {
             defer { end = begin }
             // if we don't find a semicolon in the range, we don't have a sequence
@@ -541,15 +655,15 @@ extension String {
                     let char2 = buffer[begin + 2]
                     if hexPrefixes.contains(char2) {
                         // Hex escape squences &#xa3;
-                        buffer[range] = ArraySlice(try hexStream2UnicodeChars(utf16Storage: buffer[begin + 3..<semicolonIndex]))
+                        buffer[range] = ArraySlice(try convertToUTF16Codes(hexCodeStorage: buffer[begin + 3..<semicolonIndex]))
                     } else {
                         // Decimal Sequences &#123;
-                        buffer[range] = ArraySlice(try decimalStream2UnicodeChars(utf16Storage: buffer[begin + 2..<semicolonIndex]))
+                        buffer[range] = ArraySlice(try convertToUTF16Codes(decimalCodeStorage: buffer[begin + 2..<semicolonIndex]))
                     }
                 } else {
                     // "standard" sequences
                     let escapedNameRange = begin + 1..<semicolonIndex
-                    buffer[range] = [try matchUnicodeChars(utf16Storage: buffer[escapedNameRange])]
+                    buffer[range] = [try convertToUTF16Codes(standardSequence: buffer[escapedNameRange])]
                 }
             } catch { print(error) }
         }
@@ -560,10 +674,9 @@ extension String {
             return self
         }
     }
-
+    
     /**
-     Returns an initialized String object that contains a given number of characters from a given array of Unicode characters.
-     Returns a String initialized by converting given data into Unicode characters using a given encoding.
+     Returns a String initialized by converting given ContiguousStorage of Unicode characters into Unicode characters.
      */
     private init<T>(utf16Storage: T) throws where T: ContiguousStorage, T.Iterator.Element == unichar {
         self = try utf16Storage.withUnsafeBufferPointer {
@@ -571,95 +684,4 @@ extension String {
             return String(utf16CodeUnits: p, count: $0.count)
         }
     }
-}
-
-private protocol ContiguousStorage: Sequence {
-    func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Iterator.Element>) throws -> R) rethrows -> R
-}
-
-extension Array: ContiguousStorage {}
-extension ArraySlice: ContiguousStorage {}
-extension ContiguousArray: ContiguousStorage {}
-
-public enum HTMLSpecialCharactersError: Error {
-    case invalidHexSquence
-    case invalidDecimalSquence
-    case invalidEscapeSquence
-    case invalidBufferSequence
-    case notErrorMatchedUnicode(code: unichar)
-}
-
-private func hexStream2UnicodeChars<T>(utf16Storage: T) throws -> [unichar] where T: ContiguousStorage, T.Iterator.Element == unichar {
-    let utf16: UInt = try utf16Storage.reduce(0) {
-        switch $1 {
-        case 48...57: return UInt($0) << 4 + UInt($1) - 48
-        case 65...70: return UInt($0) << 4 + UInt($1) - 65 + 10
-        case 97...102: return UInt($0) << 4 + UInt($1) - 97 + 10
-        default: throw HTMLSpecialCharactersError.invalidHexSquence
-        }
-    }
-    if utf16 < UInt(unichar.max) {
-        return [unichar(utf16)]
-    } else if utf16 < UInt(0x110000) {
-        return decodeUnicodeScalar(unicode: utf16)
-    } else {
-        throw HTMLSpecialCharactersError.invalidDecimalSquence
-    }
-}
-
-private func decimalStream2UnicodeChars<T>(utf16Storage: T) throws -> [unichar] where T: ContiguousStorage, T.Iterator.Element == unichar {
-    let utf16: UInt = try utf16Storage.reduce(0) {
-        switch $1 {
-        case 48...57: return UInt($0 * 10) + UInt($1) - 48
-        default: throw HTMLSpecialCharactersError.invalidDecimalSquence
-        }
-    }
-    if utf16 < UInt(unichar.max) {
-        return [unichar(utf16)]
-    } else if utf16 < UInt(0x110000) {
-        return decodeUnicodeScalar(unicode: utf16)
-    } else {
-        throw HTMLSpecialCharactersError.invalidDecimalSquence
-    }
-}
-
-private func matchUnicodeChars<T>(utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
-    return try utf16Storage.withUnsafeBufferPointer {
-        guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
-        let length = $0.count
-        do {
-            try getUnescapeTable(length: length)?.forEach({
-                if memcmp($0.unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
-                    throw HTMLSpecialCharactersError.notErrorMatchedUnicode(code: $0.code)
-                }
-            })
-            throw HTMLSpecialCharactersError.invalidEscapeSquence
-        } catch HTMLSpecialCharactersError.notErrorMatchedUnicode(let code) {
-            return code
-        }
-    }
-}
-
-internal func bsearch<T, U>(with key: T, from sortedArray: [U], comparator: (T, U) -> Int) -> (U, Int)? {
-    var searchCount = 0
-    var startIndex = sortedArray.startIndex
-    var endIndex = sortedArray.endIndex
-    var range = startIndex..<endIndex
-    var middle = startIndex.advanced(by: range.count/2)
-    repeat {
-        range = startIndex..<endIndex
-        middle = startIndex.advanced(by: range.count/2)
-        searchCount += 1
-        let c = comparator(key, sortedArray[middle])
-        if c == 1 {
-            startIndex = middle
-        } else if c == -1 {
-            endIndex = middle
-        } else if c == 0 {
-            return (sortedArray[middle], searchCount)
-        } else {
-            return nil
-        }
-    } while range.count > 1
-    return nil
 }
