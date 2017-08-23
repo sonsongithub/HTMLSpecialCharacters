@@ -15,6 +15,18 @@ class HTMLSpecialCharactersTests: XCTestCase {
     
     // MARK: - Test for removing HTML tags
     
+    override func setUp() {
+        super.setUp()
+        
+        do {
+            if let data = stringToBeUnescaped.data(using: .unicode) {
+                _ = try NSAttributedString(data: data, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType], documentAttributes: nil)
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
     func testRemovingHTMLTags() {
         let data: [(String, String)] = [
             ("aaa <hoge>baaa<br><", "aaa baaa<"),
@@ -64,7 +76,7 @@ class HTMLSpecialCharactersTests: XCTestCase {
     func testEscapePerformance() {
         self.measure {
             for _ in 0..<self.testCount {
-                _ = self.stringToBeUnescaped.unescapeHTML
+                _ = self.stringToBeEscaped.unescapeHTML
             }
         }
     }
@@ -72,9 +84,24 @@ class HTMLSpecialCharactersTests: XCTestCase {
     func testUnescapePerformance() {
         self.measure {
             for _ in 0..<self.testCount {
-                _ = self.stringToBeEscaped.escapeHTML
+                _ = self.stringToBeUnescaped.escapeHTML
             }
         }
+    }
+    
+    func testUnescapePerformanceByFoundation() {
+            if let data = stringToBeUnescaped.data(using: .unicode) {
+                self.measure {
+                    do {
+                        for _ in 0..<self.testCount {
+                            _ = try NSAttributedString(data: data, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType], documentAttributes: nil)
+                        }
+                    } catch {
+                        print(error)
+                    }
+                }
+            } else {
+            }
     }
 
     func testStringByEscapingHTML() {
