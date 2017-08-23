@@ -40,6 +40,38 @@ class HTMLSpecialCharactersTests: XCTestCase {
         })
     }
     
+    func testRemovingHTMLTags22() {
+        self.measure {
+            for _ in 0..<10000 {
+                _ = "<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu".removingHTMLTags
+            }
+        }
+    }
+    
+    func testRemovingHTMLTags_short() {
+        self.measure {
+            for _ in 0..<10000 {
+                _ = "<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu".removingHTMLTags
+            }
+        }
+    }
+    
+    func testRemovingHTMLTags_medium() {
+        self.measure {
+            for _ in 0..<10000 {
+                _ = "<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu".removingHTMLTags
+            }
+        }
+    }
+    
+    func testRemovingHTMLTags_long() {
+        self.measure {
+            for _ in 0..<10000 {
+                _ = "<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu<dh><>af<<<>hdsaihfiufhdsjkhfeifhhfifhiu".removingHTMLTags
+            }
+        }
+    }
+    
     // MARK: - Test for handling HTML emoji
     
     func testEmoji() {
@@ -89,20 +121,20 @@ class HTMLSpecialCharactersTests: XCTestCase {
         }
     }
     
-    func testUnescapePerformanceByFoundation() {
-            if let data = stringToBeUnescaped.data(using: .unicode) {
-                self.measure {
-                    do {
-                        for _ in 0..<self.testCount {
-                            _ = try NSAttributedString(data: data, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType], documentAttributes: nil)
-                        }
-                    } catch {
-                        print(error)
-                    }
-                }
-            } else {
-            }
-    }
+//    func testUnescapePerformanceByFoundation() {
+//            if let data = stringToBeUnescaped.data(using: .unicode) {
+//                self.measure {
+//                    do {
+//                        for _ in 0..<self.testCount {
+//                            _ = try NSAttributedString(data: data, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType], documentAttributes: nil)
+//                        }
+//                    } catch {
+//                        print(error)
+//                    }
+//                }
+//            } else {
+//            }
+//    }
 
     func testStringByEscapingHTML() {
         let chars: [unichar] = [
