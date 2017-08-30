@@ -437,7 +437,8 @@ private func convertToSurrogatePair(unicodeScalar: UInt) -> [unichar] {
     let w: UInt  = (unicodeScalar & 0b00000000000111110000000000000000) >> 16 - 1
     let x1: UInt = (unicodeScalar & 0b00000000000000001111110000000000) >> 10
     let x2: UInt = (unicodeScalar & 0b00000000000000000000001111111111) >> 0
-    let u1: UInt16 = UInt16((0b11011000 << 8) + (w << 6) + x1)
+    let u1_UInt: UInt = UInt(0b11011000 << 8) + UInt(w << 6) + x1
+    let u1: UInt16 = UInt16(u1_UInt)
     let u2: UInt16 = UInt16(UInt(0b11011100 << 8) + x2)
     return [u1, u2]
 }
