@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OBJ_16"
+               BlueprintIdentifier = "HTMLSpecialCharacters::HTMLSpecialCharacters"
                BuildableName = "HTMLSpecialCharacters.framework"
                BlueprintName = "HTMLSpecialCharacters"
                ReferencedContainer = "container:HTMLSpecialCharacters.xcodeproj">
@@ -23,7 +23,7 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       language = ""
@@ -33,9 +33,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OBJ_23"
-               BuildableName = "HTMLSpecialCharactersTests.xctest"
-               BlueprintName = "HTMLSpecialCharactersTests"
+               BlueprintIdentifier = "HTMLSpecialCharacters::HTMLSpecialCharactersTest"
+               BuildableName = "HTMLSpecialCharactersTest.xctest"
+               BlueprintName = "HTMLSpecialCharactersTest"
                ReferencedContainer = "container:HTMLSpecialCharacters.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -57,7 +57,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "OBJ_16"
+            BlueprintIdentifier = "HTMLSpecialCharacters::HTMLSpecialCharacters"
             BuildableName = "HTMLSpecialCharacters.framework"
             BlueprintName = "HTMLSpecialCharacters"
             ReferencedContainer = "container:HTMLSpecialCharacters.xcodeproj">

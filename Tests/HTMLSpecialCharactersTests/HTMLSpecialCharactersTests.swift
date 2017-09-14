@@ -20,7 +20,7 @@ class HTMLSpecialCharactersTests: XCTestCase {
         
         do {
             if let data = stringToBeUnescaped.data(using: .unicode) {
-                _ = try NSAttributedString(data: data, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType], documentAttributes: nil)
+                _ = try NSAttributedString(data: data, options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
             }
         } catch {
             print(error)
@@ -89,20 +89,20 @@ class HTMLSpecialCharactersTests: XCTestCase {
         }
     }
     
-    func testUnescapePerformanceByFoundation() {
-            if let data = stringToBeUnescaped.data(using: .unicode) {
-                self.measure {
-                    do {
-                        for _ in 0..<self.testCount {
-                            _ = try NSAttributedString(data: data, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType], documentAttributes: nil)
-                        }
-                    } catch {
-                        print(error)
-                    }
-                }
-            } else {
-            }
-    }
+//    func testUnescapePerformanceByFoundation() {
+//            if let data = stringToBeUnescaped.data(using: .unicode) {
+//                self.measure {
+//                    do {
+//                        for _ in 0..<self.testCount {
+//                            _ = try NSAttributedString(data: data, options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
+//                        }
+//                    } catch {
+//                        print(error)
+//                    }
+//                }
+//            } else {
+//            }
+//    }
 
     func testStringByEscapingHTML() {
         let chars: [unichar] = [
