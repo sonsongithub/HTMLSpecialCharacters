@@ -536,17 +536,24 @@ private func convertToUTF16Codes<T>(standardSequence utf16Storage: T) throws -> 
     return try utf16Storage.withUnsafeBufferPointer {
         guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
         let length = $0.count
-        #if false
         if let t = getUnescapeTable(length: $0.count) {
             for i in 0..<t.count {
-                var match = true
                 if memcmp(t[i].unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
                     return t[i].code
                 }
             }
         }
         throw HTMLSpecialCharactersError.invalidEscapeSquence
-            #else
+    }
+}
+
+/**
+ Convert a standard sequence code string to the UTF16 code which includes matching UTF-8 characters.
+ */
+private func convertToUTF16CodesUsingException<T>(standardSequence utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
+    return try utf16Storage.withUnsafeBufferPointer {
+        guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
+        let length = $0.count
         do {
             try getUnescapeTable(length: length)?.forEach({
                 if memcmp($0.unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
@@ -557,7 +564,6 @@ private func convertToUTF16Codes<T>(standardSequence utf16Storage: T) throws -> 
         } catch HTMLSpecialCharactersError.notErrorMatchedUnicode(let code) {
             return code
         }
-        #endif
     }
 }
 
@@ -677,6 +683,55 @@ extension String {
                     // "standard" sequences
                     let escapedNameRange = begin + 1..<semicolonIndex
                     buffer[range] = [try convertToUTF16Codes(standardSequence: buffer[escapedNameRange])]
+                }
+            } catch { print(error) }
+        }
+        do {
+            return try String(utf16Storage: buffer)
+        } catch {
+            print(error)
+            return self
+        }
+    }
+    
+    /**
+     Returns a new string made from the String by replacing all HTML unescaped sequences with the matching UTF-8 characters.
+     Original code written by @norio_nomura
+     https://gist.github.com/norio-nomura/2a79822004e7c89228300cf19595ca99
+     */
+    public var unescapeHTML_usingException: String {
+        var buffer = [unichar](repeating: 0, count: utf16.count)
+        NSString(string: self).getCharacters(&buffer)
+        
+        var end = buffer.endIndex
+        let ampersand = unichar(UInt8(ascii: "&"))
+        let semicolon = unichar(UInt8(ascii: ";"))
+        let sharp = unichar(UInt8(ascii: "#"))
+        let hexPrefixes = ["X", "x"].map { unichar(UInt8(ascii: $0)) }
+        
+        while let begin = buffer.prefix(upTo: end).reversed().index(of: ampersand).map({ buffer.index(before: $0.base) }) {
+            defer { end = begin }
+            // if we don't find a semicolon in the range, we don't have a sequence
+            guard let semicolonIndex = buffer[begin..<end].index(of: semicolon) else { continue }
+            let range = begin...semicolonIndex
+            // a squence must be longer than 3 (&lt;) and less than 11 (&thetasym;)
+            // a squence must be longer than 3 (&lt;) and less than 11 (&#Xffffff;)
+            // a squence must be longer than 3 (&lt;) and less than 11 (&#9999999;)
+            guard 4...10 ~= range.count else { continue }
+            do {
+                if buffer[begin + 1] == sharp {
+                    let char2 = buffer[begin + 2]
+                    if hexPrefixes.contains(char2) {
+                        // Hex escape squences &#xa3;
+                        buffer[range] = ArraySlice(try convertToUTF16Codes(hexCodeStorage: buffer[begin + 3..<semicolonIndex]))
+                    } else {
+                        // Decimal Sequences &#123;
+                        buffer[range] = ArraySlice(try convertToUTF16Codes(decimalCodeStorage: buffer[begin + 2..<semicolonIndex]))
+                    }
+                } else {
+                    // "standard" sequences
+                    let escapedNameRange = begin + 1..<semicolonIndex
+                    buffer[range] = [try convertToUTF16CodesUsingException(standardSequence: buffer[escapedNameRange])]
                 }
             } catch { print(error) }
         }

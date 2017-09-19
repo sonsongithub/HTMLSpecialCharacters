@@ -49,6 +49,8 @@ class HTMLSpecialCharactersTests: XCTestCase {
         XCTAssert(escaped.unescapeHTML == unescaped)
         XCTAssert(unescaped.escapeHTML == escapedHex)
         XCTAssert(escaped.unescapeHTML.escapeHTML == escapedHex)
+        let unescaped2 = "😺"
+        print(unescaped2.unescapeHTML)
     }
     
     func testAllEmoji() {
@@ -73,6 +75,10 @@ class HTMLSpecialCharactersTests: XCTestCase {
     let stringToBeUnescaped = "&quot;&amp;&amp;apos;&lt;&gt;&OElig;&oelig;&Scaron;&scaron;&Yuml;&circ;&tilde;&ensp;&emsp;&thinsp;&zwnj;&zwj;&lrm;&rlm;&ndash;&mdash;&lsquo;&rsquo;&sbquo;&ldquo;&rdquo;&bdquo;&dagger;&Dagger;&permil;&lsaquo;&rsaquo;&euro;hoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahog"
     let stringToBeEscaped = "\"&&apos;<>ŒœŠšŸˆ˜   ‌‍‎‏–—‘’‚“”„†‡‰‹›€hoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahog"
     
+    let escape1 = "&quot;"
+    
+    let escape100 = "&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;"
+    
     func testEscapePerformance() {
         self.measure {
             for _ in 0..<self.testCount {
@@ -80,11 +86,19 @@ class HTMLSpecialCharactersTests: XCTestCase {
             }
         }
     }
+
+    func testUnescapePerformanceUsingException() {
+        self.measure {
+            for _ in 0..<self.testCount {
+                _ = self.escape1.unescapeHTML_usingException
+            }
+        }
+    }
     
     func testUnescapePerformance() {
         self.measure {
             for _ in 0..<self.testCount {
-                _ = self.stringToBeUnescaped.escapeHTML
+                _ = self.escape1.unescapeHTML
             }
         }
     }
