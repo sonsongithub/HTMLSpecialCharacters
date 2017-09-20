@@ -15,6 +15,18 @@ class HTMLSpecialCharactersTests: XCTestCase {
     
     // MARK: - Test for removing HTML tags
     
+    override func setUp() {
+        super.setUp()
+        
+        do {
+            if let data = stringToBeUnescaped.data(using: .unicode) {
+                _ = try NSAttributedString(data: data, options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
     func testRemovingHTMLTags() {
         let data: [(String, String)] = [
             ("aaa <hoge>baaa<br><", "aaa baaa<"),
@@ -61,18 +73,30 @@ class HTMLSpecialCharactersTests: XCTestCase {
     let stringToBeUnescaped = "&quot;&amp;&amp;apos;&lt;&gt;&OElig;&oelig;&Scaron;&scaron;&Yuml;&circ;&tilde;&ensp;&emsp;&thinsp;&zwnj;&zwj;&lrm;&rlm;&ndash;&mdash;&lsquo;&rsquo;&sbquo;&ldquo;&rdquo;&bdquo;&dagger;&Dagger;&permil;&lsaquo;&rsaquo;&euro;hoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahoghoge&copy;a&copy;aaaaa&copy;aaaaahog"
     let stringToBeEscaped = "\"&&apos;<>ŒœŠšŸˆ˜   ‌‍‎‏–—‘’‚“”„†‡‰‹›€hoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahoghoge©a©aaaaa©aaaaahog"
     
-    func testEscapePerformance() {
-        self.measure {
-            for _ in 0..<self.testCount {
-                _ = self.stringToBeUnescaped.unescapeHTML
-            }
-        }
-    }
+    let escape1 = "&quot;"
     
     func testUnescapePerformance() {
         self.measure {
             for _ in 0..<self.testCount {
-                _ = self.stringToBeEscaped.escapeHTML
+                _ = self.escape1.unescapeHTML
+            }
+        }
+    }
+    
+    let escape100 = "&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;"
+    
+    func testUnescapePerformanceFor100() {
+        self.measure {
+            for _ in 0..<self.testCount {
+                _ = self.escape100.unescapeHTML
+            }
+        }
+    }
+    
+    func testEscapePerformance() {
+        self.measure {
+            for _ in 0..<self.testCount {
+                _ = self.stringToBeEscaped.unescapeHTML
             }
         }
     }

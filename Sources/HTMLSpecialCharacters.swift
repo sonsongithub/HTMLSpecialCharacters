@@ -437,7 +437,8 @@ private func convertToSurrogatePair(unicodeScalar: UInt) -> [unichar] {
     let w: UInt  = (unicodeScalar & 0b00000000000111110000000000000000) >> 16 - 1
     let x1: UInt = (unicodeScalar & 0b00000000000000001111110000000000) >> 10
     let x2: UInt = (unicodeScalar & 0b00000000000000000000001111111111) >> 0
-    let u1: UInt16 = UInt16((0b11011000 << 8) + (w << 6) + x1)
+    let u1_UInt: UInt = UInt(0b11011000 << 8) + UInt(w << 6) + x1
+    let u1: UInt16 = UInt16(u1_UInt)
     let u2: UInt16 = UInt16(UInt(0b11011100 << 8) + x2)
     return [u1, u2]
 }
@@ -535,16 +536,14 @@ private func convertToUTF16Codes<T>(standardSequence utf16Storage: T) throws -> 
     return try utf16Storage.withUnsafeBufferPointer {
         guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
         let length = $0.count
-        do {
-            try getUnescapeTable(length: length)?.forEach({
-                if memcmp($0.unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
-                    throw HTMLSpecialCharactersError.notErrorMatchedUnicode(code: $0.code)
+        if let t = getUnescapeTable(length: $0.count) {
+            for i in 0..<t.count {
+                if memcmp(t[i].unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
+                    return t[i].code
                 }
-            })
-            throw HTMLSpecialCharactersError.invalidEscapeSquence
-        } catch HTMLSpecialCharactersError.notErrorMatchedUnicode(let code) {
-            return code
+            }
         }
+        throw HTMLSpecialCharactersError.invalidEscapeSquence
     }
 }
 
