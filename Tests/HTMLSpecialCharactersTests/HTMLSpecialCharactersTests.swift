@@ -49,8 +49,6 @@ class HTMLSpecialCharactersTests: XCTestCase {
         XCTAssert(escaped.unescapeHTML == unescaped)
         XCTAssert(unescaped.escapeHTML == escapedHex)
         XCTAssert(escaped.unescapeHTML.escapeHTML == escapedHex)
-        let unescaped2 = "😺"
-        print(unescaped2.unescapeHTML)
     }
     
     func testAllEmoji() {
@@ -77,24 +75,6 @@ class HTMLSpecialCharactersTests: XCTestCase {
     
     let escape1 = "&quot;"
     
-    let escape100 = "&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;"
-    
-    func testEscapePerformance() {
-        self.measure {
-            for _ in 0..<self.testCount {
-                _ = self.stringToBeEscaped.unescapeHTML
-            }
-        }
-    }
-
-    func testUnescapePerformanceUsingException() {
-        self.measure {
-            for _ in 0..<self.testCount {
-                _ = self.escape1.unescapeHTML_usingException
-            }
-        }
-    }
-    
     func testUnescapePerformance() {
         self.measure {
             for _ in 0..<self.testCount {
@@ -103,20 +83,23 @@ class HTMLSpecialCharactersTests: XCTestCase {
         }
     }
     
-//    func testUnescapePerformanceByFoundation() {
-//            if let data = stringToBeUnescaped.data(using: .unicode) {
-//                self.measure {
-//                    do {
-//                        for _ in 0..<self.testCount {
-//                            _ = try NSAttributedString(data: data, options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
-//                        }
-//                    } catch {
-//                        print(error)
-//                    }
-//                }
-//            } else {
-//            }
-//    }
+    let escape100 = "&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;&quot;&amp;&amp;apos;&lt;&quot;&amp;&amp;apos;&lt;&Yuml;&circ;"
+    
+    func testUnescapePerformanceFor100() {
+        self.measure {
+            for _ in 0..<self.testCount {
+                _ = self.escape100.unescapeHTML
+            }
+        }
+    }
+    
+    func testEscapePerformance() {
+        self.measure {
+            for _ in 0..<self.testCount {
+                _ = self.stringToBeEscaped.unescapeHTML
+            }
+        }
+    }
 
     func testStringByEscapingHTML() {
         let chars: [unichar] = [
