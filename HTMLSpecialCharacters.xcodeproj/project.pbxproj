@@ -6,22 +6,7 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		"HTMLSpecialCharacters::HTMLSpecialCharactersPackageTests::ProductTarget" /* HTMLSpecialCharactersPackageTests */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = OBJ_38 /* Build configuration list for PBXAggregateTarget "HTMLSpecialCharactersPackageTests" */;
-			buildPhases = (
-			);
-			dependencies = (
-				OBJ_41 /* PBXTargetDependency */,
-			);
-			name = HTMLSpecialCharactersPackageTests;
-			productName = HTMLSpecialCharactersPackageTests;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
-		OBJ_20 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_26 /* HTMLSpecialCharactersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* HTMLSpecialCharactersTests.swift */; };
 		OBJ_28 /* HTMLSpecialCharacters.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "HTMLSpecialCharacters::HTMLSpecialCharacters::Product" /* HTMLSpecialCharacters.framework */; };
 		OBJ_35 /* HTMLSpecialCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* HTMLSpecialCharacters.swift */; };
@@ -34,13 +19,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = "HTMLSpecialCharacters::HTMLSpecialCharacters";
 			remoteInfo = HTMLSpecialCharacters;
-		};
-		144A2EDB1F6AD58800904592 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "HTMLSpecialCharacters::HTMLSpecialCharactersTest";
-			remoteInfo = HTMLSpecialCharactersTest;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -150,20 +128,6 @@
 			productReference = "HTMLSpecialCharacters::HTMLSpecialCharactersTest::Product" /* HTMLSpecialCharactersTest.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		"HTMLSpecialCharacters::SwiftPMPackageDescription" /* HTMLSpecialCharactersPackageDescription */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_16 /* Build configuration list for PBXNativeTarget "HTMLSpecialCharactersPackageDescription" */;
-			buildPhases = (
-				OBJ_19 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = HTMLSpecialCharactersPackageDescription;
-			productName = HTMLSpecialCharactersPackageDescription;
-			productType = "com.apple.product-type.framework";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -185,22 +149,12 @@
 			projectRoot = "";
 			targets = (
 				"HTMLSpecialCharacters::HTMLSpecialCharacters" /* HTMLSpecialCharacters */,
-				"HTMLSpecialCharacters::SwiftPMPackageDescription" /* HTMLSpecialCharactersPackageDescription */,
 				"HTMLSpecialCharacters::HTMLSpecialCharactersTest" /* HTMLSpecialCharactersTest */,
-				"HTMLSpecialCharacters::HTMLSpecialCharactersPackageTests::ProductTarget" /* HTMLSpecialCharactersPackageTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		OBJ_19 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_20 /* Package.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		OBJ_25 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
@@ -225,32 +179,9 @@
 			target = "HTMLSpecialCharacters::HTMLSpecialCharacters" /* HTMLSpecialCharacters */;
 			targetProxy = 144A2EDA1F6AD58800904592 /* PBXContainerItemProxy */;
 		};
-		OBJ_41 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "HTMLSpecialCharacters::HTMLSpecialCharactersTest" /* HTMLSpecialCharactersTest */;
-			targetProxy = 144A2EDB1F6AD58800904592 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		OBJ_17 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LD = /usr/bin/true;
-				OTHER_SWIFT_FLAGS = "-swift-version 4 -I /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/pm/4 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk";
-				SWIFT_VERSION = 4.0;
-			};
-			name = Debug;
-		};
-		OBJ_18 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LD = /usr/bin/true;
-				OTHER_SWIFT_FLAGS = "-swift-version 4 -I /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/pm/4 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk";
-				SWIFT_VERSION = 4.0;
-			};
-			name = Release;
-		};
 		OBJ_23 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -354,12 +285,6 @@
 			};
 			name = Release;
 		};
-		OBJ_39 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Debug;
-		};
 		OBJ_4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -381,24 +306,9 @@
 			};
 			name = Release;
 		};
-		OBJ_40 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		OBJ_16 /* Build configuration list for PBXNativeTarget "HTMLSpecialCharactersPackageDescription" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_17 /* Debug */,
-				OBJ_18 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
 		OBJ_2 /* Build configuration list for PBXProject "HTMLSpecialCharacters" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -422,15 +332,6 @@
 			buildConfigurations = (
 				OBJ_32 /* Debug */,
 				OBJ_33 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_38 /* Build configuration list for PBXAggregateTarget "HTMLSpecialCharactersPackageTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_39 /* Debug */,
-				OBJ_40 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
