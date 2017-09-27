@@ -534,16 +534,14 @@ private func convertToUTF16Codes<T>(decimalCodeStorage utf16Storage: T) throws -
  */
 private func convertToUTF16Codes<T>(standardSequence utf16Storage: T) throws -> unichar where T: ContiguousStorage, T.Iterator.Element == unichar {
     return try utf16Storage.withUnsafeBufferPointer {
-        guard let unichars = $0.baseAddress else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
         let length = $0.count
-        if let t = getUnescapeTable(length: $0.count) {
-            for i in 0..<t.count {
-                if memcmp(t[i].unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0 {
-                    return t[i].code
-                }
-            }
-        }
-        throw HTMLSpecialCharactersError.invalidEscapeSquence
+        guard let unichars = $0.baseAddress
+            else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
+        guard let table = getUnescapeTable(length: $0.count)
+            else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
+        guard let entry = table.first(where: {memcmp($0.unescapingCodes, unichars, MemoryLayout<UniChar>.size * length) == 0})
+            else { throw HTMLSpecialCharactersError.invalidEscapeSquence }
+        return entry.code
     }
 }
 
