@@ -24,7 +24,7 @@
 
 /* Begin PBXFileReference section */
 		"HTMLSpecialCharacters::HTMLSpecialCharacters::Product" /* HTMLSpecialCharacters.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = HTMLSpecialCharacters.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		"HTMLSpecialCharacters::HTMLSpecialCharactersTest::Product" /* HTMLSpecialCharactersTest.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = HTMLSpecialCharactersTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		"HTMLSpecialCharacters::HTMLSpecialCharactersTest::Product" /* HTMLSpecialCharactersTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HTMLSpecialCharactersTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_11 /* HTMLSpecialCharactersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLSpecialCharactersTests.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_8 /* HTMLSpecialCharacters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLSpecialCharacters.swift; sourceTree = "<group>"; };
@@ -192,6 +192,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = HTMLSpecialCharacters.xcodeproj/HTMLSpecialCharactersTest_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -210,6 +211,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = HTMLSpecialCharacters.xcodeproj/HTMLSpecialCharactersTest_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -228,6 +230,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-DXcode";
@@ -250,6 +253,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = HTMLSpecialCharacters.xcodeproj/HTMLSpecialCharacters_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -273,6 +277,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = HTMLSpecialCharacters.xcodeproj/HTMLSpecialCharacters_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -294,6 +299,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_OPTIMIZATION_LEVEL = s;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-DXcode";
