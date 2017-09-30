@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		143408E91F7EC05F004DBAEC /* HTMLSpecialCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* HTMLSpecialCharacters.swift */; };
 		14CEAF681F7EA66400C4E199 /* HTMLSpecialCharacters.h in Headers */ = {isa = PBXBuildFile; fileRef = 14CEAF661F7EA66400C4E199 /* HTMLSpecialCharacters.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_26 /* HTMLSpecialCharactersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* HTMLSpecialCharactersTests.swift */; };
 		OBJ_28 /* HTMLSpecialCharacters.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "HTMLSpecialCharacters::HTMLSpecialCharacters::Product" /* HTMLSpecialCharacters.framework */; };
@@ -228,6 +229,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				143408E91F7EC05F004DBAEC /* HTMLSpecialCharacters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
