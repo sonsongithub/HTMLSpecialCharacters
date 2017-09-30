@@ -7,23 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		143408E91F7EC05F004DBAEC /* HTMLSpecialCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* HTMLSpecialCharacters.swift */; };
 		14543D501F7F6731007720CA /* HTMLSpecialCharacters.h in Headers */ = {isa = PBXBuildFile; fileRef = 14543D4E1F7F6731007720CA /* HTMLSpecialCharacters.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		14543D541F7F6BC5007720CA /* HTMLSpecialCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* HTMLSpecialCharacters.swift */; };
+		14543D551F7F6BCC007720CA /* HTMLSpecialCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* HTMLSpecialCharacters.swift */; };
 		14CEAF681F7EA66400C4E199 /* HTMLSpecialCharacters.h in Headers */ = {isa = PBXBuildFile; fileRef = 14CEAF661F7EA66400C4E199 /* HTMLSpecialCharacters.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_26 /* HTMLSpecialCharactersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* HTMLSpecialCharactersTests.swift */; };
-		OBJ_28 /* HTMLSpecialCharacters.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "HTMLSpecialCharacters::HTMLSpecialCharacters::Product" /* HTMLSpecialCharacters.framework */; };
-		OBJ_35 /* HTMLSpecialCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* HTMLSpecialCharacters.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		144A2EDA1F6AD58800904592 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "HTMLSpecialCharacters::HTMLSpecialCharacters";
-			remoteInfo = HTMLSpecialCharacters;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		14543D4C1F7F6731007720CA /* HTMLSpecialCharacters.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HTMLSpecialCharacters.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -32,7 +21,6 @@
 		14CEAF641F7EA66300C4E199 /* HTMLSpecialCharacters.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HTMLSpecialCharacters.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		14CEAF661F7EA66400C4E199 /* HTMLSpecialCharacters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTMLSpecialCharacters.h; sourceTree = "<group>"; };
 		14CEAF671F7EA66400C4E199 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		"HTMLSpecialCharacters::HTMLSpecialCharacters::Product" /* HTMLSpecialCharacters.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = HTMLSpecialCharacters.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"HTMLSpecialCharacters::HTMLSpecialCharactersTest::Product" /* HTMLSpecialCharactersTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HTMLSpecialCharactersTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_11 /* HTMLSpecialCharactersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLSpecialCharactersTests.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
@@ -55,14 +43,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		OBJ_27 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_28 /* HTMLSpecialCharacters.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_36 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
@@ -102,7 +82,6 @@
 			isa = PBXGroup;
 			children = (
 				"HTMLSpecialCharacters::HTMLSpecialCharactersTest::Product" /* HTMLSpecialCharactersTest.xctest */,
-				"HTMLSpecialCharacters::HTMLSpecialCharacters::Product" /* HTMLSpecialCharacters.framework */,
 				14CEAF641F7EA66300C4E199 /* HTMLSpecialCharacters.framework */,
 				14543D4C1F7F6731007720CA /* HTMLSpecialCharacters.framework */,
 			);
@@ -195,22 +174,6 @@
 			productReference = 14CEAF641F7EA66300C4E199 /* HTMLSpecialCharacters.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		"HTMLSpecialCharacters::HTMLSpecialCharacters" /* HTMLSpecialCharacters-iOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_31 /* Build configuration list for PBXNativeTarget "HTMLSpecialCharacters-iOS" */;
-			buildPhases = (
-				OBJ_34 /* Sources */,
-				OBJ_36 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "HTMLSpecialCharacters-iOS";
-			productName = HTMLSpecialCharacters;
-			productReference = "HTMLSpecialCharacters::HTMLSpecialCharacters::Product" /* HTMLSpecialCharacters.framework */;
-			productType = "com.apple.product-type.framework";
-		};
 		"HTMLSpecialCharacters::HTMLSpecialCharactersTest" /* HTMLSpecialCharactersTest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = OBJ_22 /* Build configuration list for PBXNativeTarget "HTMLSpecialCharactersTest" */;
@@ -221,7 +184,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				OBJ_29 /* PBXTargetDependency */,
 			);
 			name = HTMLSpecialCharactersTest;
 			productName = HTMLSpecialCharactersTest;
@@ -261,7 +223,6 @@
 			projectRoot = "";
 			targets = (
 				14543D4B1F7F6731007720CA /* HTMLSpecialCharacters */,
-				"HTMLSpecialCharacters::HTMLSpecialCharacters" /* HTMLSpecialCharacters-iOS */,
 				14CEAF631F7EA66300C4E199 /* HTMLSpecialCharacters-macOS */,
 				"HTMLSpecialCharacters::HTMLSpecialCharactersTest" /* HTMLSpecialCharactersTest */,
 			);
@@ -290,6 +251,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14543D551F7F6BCC007720CA /* HTMLSpecialCharacters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,7 +259,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				143408E91F7EC05F004DBAEC /* HTMLSpecialCharacters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,27 +266,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				14543D541F7F6BC5007720CA /* HTMLSpecialCharacters.swift in Sources */,
 				OBJ_26 /* HTMLSpecialCharactersTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_34 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_35 /* HTMLSpecialCharacters.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		OBJ_29 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "HTMLSpecialCharacters::HTMLSpecialCharacters" /* HTMLSpecialCharacters-iOS */;
-			targetProxy = 144A2EDA1F6AD58800904592 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		14543D511F7F6731007720CA /* Debug */ = {
@@ -654,55 +600,6 @@
 			};
 			name = Debug;
 		};
-		OBJ_32 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = HTMLSpecialCharacters.xcodeproj/HTMLSpecialCharacters_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = HTMLSpecialCharacters;
-				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = HTMLSpecialCharacters;
-			};
-			name = Debug;
-		};
-		OBJ_33 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEVELOPMENT_TEAM = "";
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = HTMLSpecialCharacters.xcodeproj/HTMLSpecialCharacters_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = HTMLSpecialCharacters;
-				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = HTMLSpecialCharacters;
-			};
-			name = Release;
-		};
 		OBJ_4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -760,15 +657,6 @@
 			buildConfigurations = (
 				OBJ_23 /* Debug */,
 				OBJ_24 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_31 /* Build configuration list for PBXNativeTarget "HTMLSpecialCharacters-iOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_32 /* Debug */,
-				OBJ_33 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
