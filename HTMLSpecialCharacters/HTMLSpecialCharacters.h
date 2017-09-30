@@ -5,7 +5,7 @@
 //  Created by sonson on 2017/09/30.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <UIKit/UIKit.h>
 
 //! Project version number for HTMLSpecialCharacters.
 FOUNDATION_EXPORT double HTMLSpecialCharactersVersionNumber;
