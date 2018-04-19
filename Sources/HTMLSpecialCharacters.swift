@@ -591,7 +591,7 @@ extension String {
     public var escapeHTML: String {
         let length = utf16.count
         let buffer = UnsafeMutablePointer<unichar>.allocate(capacity: utf16.count)
-        defer { buffer.deallocate(capacity: utf16.count) }
+        defer { buffer.deallocate() }
         NSString(string: self).getCharacters(buffer)
         let margin = 0
         guard let destinationBuffer = NSMutableData(capacity: MemoryLayout<unichar>.size * (utf16.count + margin)) else { return self }
