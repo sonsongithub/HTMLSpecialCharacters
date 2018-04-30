@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "HTMLSpecialCharacters"
-  s.version          = "1.3.4"
+  s.version          = "1.3.6"
   s.summary          = "Library to escape/unescape HTML special characters in Swift."
   s.description      = <<-DESC
                       Library to escape/unescape HTML special characters in Swift. Google Toolbox for Mac is known as a great library which supports escaping/unescaping HTML special characters. But it's written in Objective-C.
