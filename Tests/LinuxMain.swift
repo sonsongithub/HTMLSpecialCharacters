@@ -1,6 +1,7 @@
 import XCTest
-@testable import HTMLSpecialCharactersTests
 
-XCTMain([
-     testCase(HTMLSpecialCharactersTests.allTests)
-])
+import HTMLSpecialCharactersTests
+
+var tests = [XCTestCaseEntry]()
+tests += HTMLSpecialCharactersTests.allTests()
+XCTMain(tests)
