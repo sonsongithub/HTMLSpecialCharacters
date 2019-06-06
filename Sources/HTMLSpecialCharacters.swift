@@ -564,7 +564,10 @@ extension String {
     public var removingHTMLTags: String {
         let length = utf16.count
         var buffer = [unichar](repeating: 0, count: utf16.count)
+        
         NSString(string: self).getCharacters(&buffer)
+        
+        let p = UnsafeMutablePointer<unichar>(&buffer)
         
         let leftParenthesis = unichar(UInt8(ascii: "<"))
         let rightParenthesis = unichar(UInt8(ascii: ">"))
@@ -572,15 +575,16 @@ extension String {
         guard let destinationBuffer = NSMutableData(capacity: MemoryLayout<unichar>.size * utf16.count) else { return self }
         var begin = 0
         let end = length
-        while let leftIndex = buffer.suffix(from: begin).index(of: leftParenthesis) {
-            guard let rightIndex = buffer[leftIndex..<end].index(of: rightParenthesis)?.advanced(by: 1) else { break }
+        while let leftIndex = buffer.suffix(from: begin).firstIndex(of: leftParenthesis) {
+            guard let rightIndex = buffer[leftIndex..<end].firstIndex(of: rightParenthesis)?.advanced(by: 1) else { break }
             let range = begin..<leftIndex
-            destinationBuffer.append(&buffer + begin, length: MemoryLayout<unichar>.size * range.count)
+            print(MemoryLayout<unichar>.size)
+            destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * range.count)
             begin = rightIndex
         }
         if length - begin > 0 {
             let copyLength = length - begin
-            destinationBuffer.append(&buffer + begin, length: MemoryLayout<unichar>.size * copyLength)
+            destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * copyLength)
         }
         return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
     }
@@ -638,10 +642,10 @@ extension String {
         let sharp = unichar(UInt8(ascii: "#"))
         let hexPrefixes = ["X", "x"].map { unichar(UInt8(ascii: $0)) }
         
-        while let begin = buffer.prefix(upTo: end).reversed().index(of: ampersand).map({ buffer.index(before: $0.base) }) {
+        while let begin = buffer.prefix(upTo: end).reversed().firstIndex(of: ampersand).map({ buffer.index(before: $0.base) }) {
             defer { end = begin }
             // if we don't find a semicolon in the range, we don't have a sequence
-            guard let semicolonIndex = buffer[begin..<end].index(of: semicolon) else { continue }
+            guard let semicolonIndex = buffer[begin..<end].firstIndex(of: semicolon) else { continue }
             let range = begin...semicolonIndex
             // a squence must be longer than 3 (&lt;) and less than 11 (&thetasym;)
             // a squence must be longer than 3 (&lt;) and less than 11 (&#Xffffff;)

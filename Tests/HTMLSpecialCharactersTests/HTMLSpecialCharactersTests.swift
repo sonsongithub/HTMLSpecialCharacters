@@ -20,7 +20,8 @@ class HTMLSpecialCharactersTests: XCTestCase {
         
         do {
             if let data = stringToBeUnescaped.data(using: .unicode) {
-                _ = try NSAttributedString(data: data, options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
+                _ = try NSAttributedString(data: data, options:
+                    [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
             }
         } catch {
             print(error)
@@ -175,7 +176,7 @@ class HTMLSpecialCharactersTests: XCTestCase {
 
         for i in 0..<chars.count {
             let buffer = UnsafeMutablePointer<unichar>.allocate(capacity: 1)
-            defer { buffer.deallocate(capacity: chars.count) }
+            defer { buffer.deallocate() }
             buffer.pointee = chars[i]
             guard let testString = String(bytesNoCopy: buffer, length: MemoryLayout<unichar>.size, encoding: String.Encoding.utf16LittleEndian, freeWhenDone: false) else { XCTFail(); return }
             let r = NSRange(location: i, length: 1)
