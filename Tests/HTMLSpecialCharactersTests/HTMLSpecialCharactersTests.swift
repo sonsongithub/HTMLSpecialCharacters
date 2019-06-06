@@ -175,7 +175,7 @@ class HTMLSpecialCharactersTests: XCTestCase {
 
         for i in 0..<chars.count {
             let buffer = UnsafeMutablePointer<unichar>.allocate(capacity: 1)
-            defer { buffer.deallocate(capacity: chars.count) }
+            defer { buffer.deallocate() }
             buffer.pointee = chars[i]
             guard let testString = String(bytesNoCopy: buffer, length: MemoryLayout<unichar>.size, encoding: String.Encoding.utf16LittleEndian, freeWhenDone: false) else { XCTFail(); return }
             let r = NSRange(location: i, length: 1)

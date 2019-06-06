@@ -566,6 +566,8 @@ extension String {
         var buffer = [unichar](repeating: 0, count: utf16.count)
         NSString(string: self).getCharacters(&buffer)
         
+        let p = UnsafeMutablePointer<unichar>(&buffer)
+        
         let leftParenthesis = unichar(UInt8(ascii: "<"))
         let rightParenthesis = unichar(UInt8(ascii: ">"))
         
@@ -575,12 +577,12 @@ extension String {
         while let leftIndex = buffer.suffix(from: begin).index(of: leftParenthesis) {
             guard let rightIndex = buffer[leftIndex..<end].index(of: rightParenthesis)?.advanced(by: 1) else { break }
             let range = begin..<leftIndex
-            destinationBuffer.append(&buffer + begin, length: MemoryLayout<unichar>.size * range.count)
+            destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * range.count)
             begin = rightIndex
         }
         if length - begin > 0 {
             let copyLength = length - begin
-            destinationBuffer.append(&buffer + begin, length: MemoryLayout<unichar>.size * copyLength)
+            destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * copyLength)
         }
         return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
     }
