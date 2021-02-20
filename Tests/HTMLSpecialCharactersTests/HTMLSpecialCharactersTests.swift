@@ -95,17 +95,21 @@ final class HTMLSpecialCharactersTests: XCTestCase {
     }
     
     func testStringByEscapingHTML() {
-        let chars: [unichar] = [
+        var chars: [unichar] = [
             34, 38, 39, 60, 62, 338, 339, 352, 353, 376, 710, 732,
             8194, 8195, 8201, 8204, 8205, 8206, 8207, 8211, 8212, 8216, 8217, 8218,
             8220, 8221, 8222, 8224, 8225, 8240, 8249, 8250, 8364
         ]
+
         let string = "&quot;&amp;&apos;&lt;&gt;&OElig;&oelig;&Scaron;&scaron;&Yuml;" +
             "&circ;&tilde;&ensp;&emsp;&thinsp;&zwnj;&zwj;&lrm;&rlm;&ndash;" +
             "&mdash;&lsquo;&rsquo;&sbquo;&ldquo;&rdquo;&bdquo;&dagger;&Dagger;" +
         "&permil;&lsaquo;&rsaquo;&euro;"
-        let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (chars))
-        guard let stringToBeEscaped = String(bytesNoCopy: pointer, length: MemoryLayout<unichar>.size * chars.count, encoding: String.Encoding.utf16LittleEndian, freeWhenDone: false) else { XCTFail(); return }
+        
+        let data = Data(bytes: &chars, count: MemoryLayout<UInt16>.size * chars.count)
+        
+        let stringToBeEscaped = String(data: data, encoding: String.Encoding.utf16LittleEndian)!
+
         XCTAssert(stringToBeEscaped.escapeHTML == string, "HTML escaping failed")
         XCTAssert("<this & that>".escapeHTML == "&lt;this &amp; that&gt;", "HTML escaping failed")
         XCTAssert("パン・&ド・カンパーニュ".escapeHTML == "パン・&amp;ド・カンパーニュ", "HTML escaping failed")
