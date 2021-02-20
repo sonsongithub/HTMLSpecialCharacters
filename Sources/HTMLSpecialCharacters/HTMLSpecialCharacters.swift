@@ -567,25 +567,30 @@ extension String {
         
         NSString(string: self).getCharacters(&buffer)
         
-        let p = UnsafeMutablePointer<unichar>(&buffer)
-        
-        let leftParenthesis = unichar(UInt8(ascii: "<"))
-        let rightParenthesis = unichar(UInt8(ascii: ">"))
-        
         guard let destinationBuffer = NSMutableData(capacity: MemoryLayout<unichar>.size * utf16.count) else { return self }
-        var begin = 0
-        let end = length
-        while let leftIndex = buffer.suffix(from: begin).firstIndex(of: leftParenthesis) {
-            guard let rightIndex = buffer[leftIndex..<end].firstIndex(of: rightParenthesis)?.advanced(by: 1) else { break }
-            let range = begin..<leftIndex
-            print(MemoryLayout<unichar>.size)
-            destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * range.count)
-            begin = rightIndex
+        
+//        let p = UnsafeMutablePointer<unichar>(&buffer)
+        
+        buffer.withUnsafeBufferPointer { (pointer) -> Void in
+            let p = pointer.baseAddress!
+            let leftParenthesis = unichar(UInt8(ascii: "<"))
+            let rightParenthesis = unichar(UInt8(ascii: ">"))
+            
+            var begin = 0
+            let end = length
+            while let leftIndex = buffer.suffix(from: begin).firstIndex(of: leftParenthesis) {
+                guard let rightIndex = buffer[leftIndex..<end].firstIndex(of: rightParenthesis)?.advanced(by: 1) else { break }
+                let range = begin..<leftIndex
+                print(MemoryLayout<unichar>.size)
+                destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * range.count)
+                begin = rightIndex
+            }
+            if length - begin > 0 {
+                let copyLength = length - begin
+                destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * copyLength)
+            }
         }
-        if length - begin > 0 {
-            let copyLength = length - begin
-            destinationBuffer.append(p + begin, length: MemoryLayout<unichar>.size * copyLength)
-        }
+        
         return String(data: destinationBuffer as Data, encoding: .utf16LittleEndian) ?? self
     }
     
@@ -605,16 +610,22 @@ extension String {
                 // 2byte character
                 let copyLength = i - start
                 destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
-                let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result.0.unescapingCodes))
-                destinationBuffer.append(pointer, length: MemoryLayout<unichar>.size * result.0.count)
+                
+                result.0.unescapingCodes.withUnsafeBytes { (pointer) -> Void in
+                    let p = pointer.baseAddress!
+                    destinationBuffer.append(p, length: MemoryLayout<unichar>.size * result.0.count)
+                }
+                
                 start = i + 1
             } else if i < length - 1 {
                 if let result = convertToUnicodeScalarString(firstOfSurrogatePair: (buffer + i).pointee, second: (buffer + i + 1).pointee) {
                     // 4byte character, surrogate pair.
                     let copyLength = i - start
                     destinationBuffer.append(buffer + start, length: MemoryLayout<unichar>.size * copyLength)
-                    let pointer: UnsafeMutablePointer<unichar> = UnsafeMutablePointer(mutating: (result))
-                    destinationBuffer.append(pointer, length: MemoryLayout<unichar>.size * result.count)
+                    result.withUnsafeBytes { (pointer) -> Void in
+                        let p = pointer.baseAddress!
+                        destinationBuffer.append(p, length: MemoryLayout<unichar>.size * result.count)
+                    }
                     start = i + 2
                     i += 1
                 }
